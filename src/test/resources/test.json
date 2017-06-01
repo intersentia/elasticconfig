@@ -1,0 +1,88 @@
+{
+  "TestModel": {
+    "dynamic": "strict",
+    "properties": {
+      "volume": {
+        "coerce": true,
+        "copy_to": [
+          "xxx"
+        ],
+        "index": true,
+        "boost": 1.0,
+        "ignore_malformed": false,
+        "store": true,
+        "type": "integer",
+        "doc_values": true
+      },
+      "documentId": {
+        "copy_to": [],
+        "eager_global_ordinals": false,
+        "norms": false,
+        "ignore_above": 2147483647,
+        "index": true,
+        "boost": 1.0,
+        "store": true,
+        "type": "keyword",
+        "index_options": "docs",
+        "doc_values": true
+      },
+      "page": {
+        "copy_to": [],
+        "eager_global_ordinals": false,
+        "norms": false,
+        "ignore_above": 2147483647,
+        "index": true,
+        "boost": 1.0,
+        "store": true,
+        "type": "keyword",
+        "index_options": "docs",
+        "doc_values": true
+      },
+      "publicationDate": {
+        "copy_to": [],
+        "index": true,
+        "boost": 1.0,
+        "ignore_malformed": false,
+        "store": true,
+        "type": "date",
+        "doc_values": true
+      },
+      "content": {
+        "copy_to": [],
+        "eager_global_ordinals": false,
+        "fielddata": false,
+        "norms": true,
+        "term_vector": "no",
+        "index": true,
+        "boost": 1.0,
+        "store": false,
+        "type": "text",
+        "index_options": "positions"
+      },
+      "publicationCode": {
+        "copy_to": [],
+        "eager_global_ordinals": false,
+        "norms": false,
+        "ignore_above": 2147483647,
+        "index": false,
+        "boost": 1.0,
+        "store": true,
+        "type": "keyword",
+        "index_options": "docs",
+        "doc_values": true
+      },
+      "publicationNumber": {
+        "copy_to": [],
+        "eager_global_ordinals": false,
+        "norms": false,
+        "ignore_above": 2147483647,
+        "index": true,
+        "boost": 1.0,
+        "store": true,
+        "type": "keyword",
+        "index_options": "docs",
+        "doc_values": true
+      }
+    }
+  }
+}
