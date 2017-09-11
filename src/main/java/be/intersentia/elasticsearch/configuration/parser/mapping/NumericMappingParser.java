@@ -3,6 +3,7 @@ package be.intersentia.elasticsearch.configuration.parser.mapping;
 import be.intersentia.elasticsearch.configuration.annotation.mapping.NumericMapping;
 import be.intersentia.elasticsearch.configuration.annotation.mapping.NumericMappings;
 import be.intersentia.elasticsearch.configuration.annotation.mapping.OptionalBoolean;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 
 import java.lang.reflect.Field;
@@ -62,7 +63,9 @@ public class NumericMappingParser extends AbstractMappingParser<NumericMapping> 
     public void addMapping(Map<String, Object> mapping, NumericMapping annotation) {
         mapping.put("boost", annotation.boost());
         mapping.put("coerce", annotation.coerce());
-        mapping.put("copy_to", annotation.copyTo());
+        if (ArrayUtils.isNotEmpty(annotation.copyTo())) {
+            mapping.put("copy_to", annotation.copyTo());
+        }
         mapping.put("doc_values", annotation.docValues());
         mapping.put("ignore_malformed", annotation.ignoreMalformed());
         if (annotation.includeInAll() != OptionalBoolean.DEFAULT) {

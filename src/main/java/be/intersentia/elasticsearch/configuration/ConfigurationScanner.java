@@ -6,6 +6,7 @@ import be.intersentia.elasticsearch.configuration.factory.AnalysisFactory;
 import be.intersentia.elasticsearch.configuration.factory.MappingFactory;
 import io.github.lukehutch.fastclasspathscanner.FastClasspathScanner;
 import io.github.lukehutch.fastclasspathscanner.scanner.ClassInfo;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.util.*;
@@ -55,9 +56,25 @@ public class ConfigurationScanner {
             Optional<ClassInfo> analysis = classInfoPerForIndex.stream().filter(ci -> ci.hasAnnotation(Analysis.class.getName())).findFirst();
             analysis.ifPresent(a -> request.settings(AnalysisFactory.createAnalysis(getClass(a))));
 
+            List<String> parents = new ArrayList<>(classInfoPerForIndex).stream()
+                    .filter(ci -> {
+                        Index s = getClass(ci).getAnnotation(Index.class);
+                        return StringUtils.isNoneBlank(s.parent());
+                    })
+                    .map(ci -> getClass(ci).getSimpleName())
+                    .collect(Collectors.toList());
+
+
+
             classInfoPerForIndex.forEach(ci -> {
                 Index s = getClass(ci).getAnnotation(Index.class);
-                request.mapping(getClass(ci).getSimpleName(), MappingFactory.createMapping(getClass(ci), s.disableDynamicProperties(), s.disableAllField()));
+                request.
+                        mapping(getClass(ci).getSimpleName(),
+                                MappingFactory.createMapping(getClass(ci),
+                                        s.disableDynamicProperties(),
+                                        s.disableAllField(),
+                                        Optional.ofNullable(s.parent()),
+                                        Optional.empty()));
             });
             return request;
         }).collect(Collectors.toList());

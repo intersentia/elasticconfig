@@ -6,7 +6,7 @@
 
     <groupId>be.intersentia.elasticsearch</groupId>
     <artifactId>mapping_annotations</artifactId>
-    <version>0.5</version>
+    <version>0.5.1</version>
 
     <dependencies>
         <dependency>
@@ -67,4 +67,16 @@
             </plugin>
         </plugins>
     </build>
+    <distributionManagement>
+        <repository>
+            <id>71644c600078</id>
+            <name>71644c600078-releases</name>
+            <url>http://artifactory.intersentia.be/artifactory/libs-release-local</url>
+        </repository>
+        <snapshotRepository>
+            <id>71644c600078</id>
+            <name>71644c600078-snapshots</name>
+            <url>http://artifactory.intersentia.be/artifactory/libs-snapshot-local</url>
+        </snapshotRepository>
+    </distributionManagement>
 </project>

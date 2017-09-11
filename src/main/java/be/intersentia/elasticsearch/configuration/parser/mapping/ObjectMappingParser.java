@@ -5,10 +5,7 @@ import be.intersentia.elasticsearch.configuration.factory.MappingFactory;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * This class is responsible for translating an ObjectMapping to a Map object the ElasticSearch client understands.
@@ -55,17 +52,19 @@ public class ObjectMappingParser extends AbstractMappingParser<ObjectMapping> {
     public void addMapping(Map<String, Object> mapping, ObjectMapping annotation) {
         mapping.put("dynamic", annotation.dynamic());
         mapping.put("enabled", annotation.enabled());
+        mapping.put("type", "object");
         if (annotation.includeInAll() != OptionalBoolean.DEFAULT) {
             mapping.put("include_in_all", annotation.includeInAll());
         }
         if (field == null) {
             mapping.put("properties", new HashMap<String, Object>());
         } else if (Collection.class.isAssignableFrom(field.getType())) {
+
             ParameterizedType listType = (ParameterizedType) field.getGenericType();
             Class<?> listClass = (Class<?>) listType.getActualTypeArguments()[0];
-            mapping.putAll(MappingFactory.createMapping(listClass, false, false));
+            mapping.putAll(MappingFactory.createMapping(listClass, false, false, Optional.empty(), Optional.of(clazz)));
         } else {
-            mapping.putAll(MappingFactory.createMapping(field.getType(), false, false));
+            mapping.putAll(MappingFactory.createMapping(field.getType(), false, false, Optional.empty(), Optional.of(clazz)));
         }
     }
 }

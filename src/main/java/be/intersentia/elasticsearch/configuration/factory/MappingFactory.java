@@ -3,15 +3,16 @@ package be.intersentia.elasticsearch.configuration.factory;
 import be.intersentia.elasticsearch.configuration.annotation.templates.DynamicTemplate;
 import be.intersentia.elasticsearch.configuration.parser.mapping.*;
 import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Modifier;
+import java.lang.reflect.*;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Function;
 
 /**
  *  This class is responsible for transforming a class annotated with various types of ElasticSearch Mapping interfaces
@@ -19,8 +20,10 @@ import java.util.*;
  */
 public class MappingFactory {
     private static final Logger log = Logger.getLogger(MappingFactory.class);
+    static Map<String, AtomicInteger> recursiveCounts = new HashMap<>();
 
-    public static Map<String, ?> createMapping(Class<?> clazz, boolean disableDynamicProperties, boolean disableAllField) {
+    public static Map<String, ?> createMapping(Class<?> clazz, boolean disableDynamicProperties, boolean disableAllField, Optional<String> parent, Optional<Class<?>> parentClass) {
+
         log.info("Creating ElasticSearch mapping for " + clazz.getSimpleName());
         Map<String, Object> map = new HashMap<String, Object>();
         if (disableDynamicProperties) {
@@ -29,6 +32,9 @@ public class MappingFactory {
         if (disableAllField) {
             map.put("_all", Collections.singletonMap("enabled", "false"));
         }
+
+        parent.filter(StringUtils::isNoneEmpty).ifPresent(p -> map.put("_parent", Collections.singletonMap("type", p)));
+
         List<Map<String, Object>> templatesList = new ArrayList<Map<String, Object>>();
         Map<String, Object> propertiesMap = new HashMap<String, Object>();
 
@@ -37,10 +43,24 @@ public class MappingFactory {
         addTemplates(templatesList, clazz, annotations);
         addMapping(propertiesMap, clazz, null, annotations);
 
+
+
         for (Field field : getFields(clazz)) {
             log.trace(clazz.getSimpleName() + '.' + field.getName() + ": Inspecting annotations");
             annotations = field.getDeclaredAnnotations();
-            addMapping(propertiesMap, clazz, field, annotations);
+            String fullName = parentClass.map(Class::getSimpleName).orElse("root") + "." + clazz.getSimpleName() + '.' + field.getName();
+
+            boolean isRecursive = isRecurive(field, clazz);
+            if (isRecursive) {
+                AtomicInteger count = recursiveCounts.getOrDefault(fullName, new AtomicInteger(0));
+                count.incrementAndGet();
+                recursiveCounts.put(fullName, count);
+                if (count.intValue() < 5) addMapping(propertiesMap, clazz, field, annotations);
+                else {
+                    log.warn("ignoring " + fullName);
+                    recursiveCounts.put(fullName, new AtomicInteger(0));
+                }
+            } else addMapping(propertiesMap, clazz, field, annotations);
         }
 
         if (!templatesList.isEmpty()) {
@@ -58,6 +78,23 @@ public class MappingFactory {
             log.debug("Returning mapping for " + is.toString());
         }
         return map;
+    }
+
+    private static boolean isRecurive(Field field, Class<?> clazz) {
+        boolean result = false;
+        try {
+            Type type = field.getGenericType();
+            if (type.getClass().equals(clazz)) result = true;
+            if (type instanceof ParameterizedType) {
+                ParameterizedType pt = (ParameterizedType) type;
+                for (Type t : pt.getActualTypeArguments()) {
+                    if (t.equals(clazz)) result = true;
+                }
+            }
+        } catch(Exception e) {
+            log.error(e);
+        }
+        return result;
     }
 
     private static void addTemplates(List<Map<String, Object>> templatesList, Class<?> clazz, Annotation[] annotations) {

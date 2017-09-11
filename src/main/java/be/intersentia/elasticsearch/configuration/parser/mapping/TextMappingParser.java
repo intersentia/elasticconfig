@@ -3,6 +3,7 @@ package be.intersentia.elasticsearch.configuration.parser.mapping;
 import be.intersentia.elasticsearch.configuration.annotation.mapping.OptionalBoolean;
 import be.intersentia.elasticsearch.configuration.annotation.mapping.TextMapping;
 import be.intersentia.elasticsearch.configuration.annotation.mapping.TextMappings;
+import org.apache.commons.lang3.ArrayUtils;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
@@ -43,7 +44,11 @@ public class TextMappingParser extends AbstractMappingParser<TextMapping> {
             mapping.put("analyzer", annotation.analyzer());
         }
         mapping.put("boost", annotation.boost());
-        mapping.put("copy_to", annotation.copyTo());
+
+        if (ArrayUtils.isNotEmpty(annotation.copyTo())) {
+            mapping.put("copy_to", annotation.copyTo());
+        }
+
         mapping.put("eager_global_ordinals", annotation.eagerGlobalOrdinals());
         mapping.put("fielddata", annotation.fieldData());
         addFieldDataFrequencyFilterMapping(mapping, annotation);

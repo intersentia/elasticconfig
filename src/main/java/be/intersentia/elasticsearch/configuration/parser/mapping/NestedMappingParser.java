@@ -10,6 +10,7 @@ import java.lang.reflect.ParameterizedType;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * This class is responsible for translating a NestedMapping to a Map object the ElasticSearch client understands.
@@ -51,9 +52,9 @@ public class NestedMappingParser extends AbstractMappingParser<NestedMapping> {
         } else if (Collection.class.isAssignableFrom(field.getType())) {
             ParameterizedType listType = (ParameterizedType) field.getGenericType();
             Class<?> listClass = (Class<?>) listType.getActualTypeArguments()[0];
-            mapping.putAll(MappingFactory.createMapping(listClass, false, false));
+            mapping.putAll(MappingFactory.createMapping(listClass, false, false, Optional.empty(), Optional.of(clazz)));
         } else {
-            mapping.putAll(MappingFactory.createMapping(field.getType(), false, false));
+            mapping.putAll(MappingFactory.createMapping(field.getType(), false, false, Optional.empty(), Optional.of(clazz)));
         }
     }
 }

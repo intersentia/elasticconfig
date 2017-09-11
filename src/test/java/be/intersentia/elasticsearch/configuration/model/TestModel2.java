@@ -24,7 +24,7 @@ import java.util.Date;
         }
 )
 
-@Index
+@Index(parent = "TestModel", disableAllField = true)
 public class TestModel2 {
     @KeywordMapping(index = true, store = true)
     private String documentId;

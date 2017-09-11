@@ -2,6 +2,7 @@ package be.intersentia.elasticsearch.configuration.parser.mapping;
 
 import be.intersentia.elasticsearch.configuration.annotation.mapping.BooleanMapping;
 import be.intersentia.elasticsearch.configuration.annotation.mapping.BooleanMappings;
+import org.apache.commons.lang3.ArrayUtils;
 
 import java.lang.reflect.Field;
 import java.util.Map;
@@ -38,7 +39,9 @@ public class BooleanMappingParser extends AbstractMappingParser<BooleanMapping> 
     @Override
     public void addMapping(Map<String, Object> mapping, BooleanMapping annotation) {
         mapping.put("boost", annotation.boost());
-        mapping.put("copy_to", annotation.copyTo());
+        if (ArrayUtils.isNotEmpty(annotation.copyTo())) {
+            mapping.put("copy_to", annotation.copyTo());
+        }
         mapping.put("doc_values", annotation.docValues());
         mapping.put("index", annotation.index());
         if (!"DEFAULT".equals(annotation.nullValue())) {

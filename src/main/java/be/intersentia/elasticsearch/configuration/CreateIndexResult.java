@@ -2,11 +2,13 @@ package be.intersentia.elasticsearch.configuration;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 public class CreateIndexResult {
     private final String index;
     private  Map settings;
-    private  Map<String,Map> mapping = new HashMap();
+    private  Map<String,Map> mapping = new TreeMap<>();
 
     public CreateIndexResult(String index) {
         this.index = index;
@@ -31,7 +33,7 @@ public class CreateIndexResult {
         return this;
     }
 
-    public Map getMapping() {
+    public Map<String, Map> getMapping() {
         return mapping;
     }
 }

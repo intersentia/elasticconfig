@@ -3,6 +3,7 @@ package be.intersentia.elasticsearch.configuration.parser.mapping;
 import be.intersentia.elasticsearch.configuration.annotation.mapping.DateMapping;
 import be.intersentia.elasticsearch.configuration.annotation.mapping.DateMappings;
 import be.intersentia.elasticsearch.configuration.annotation.mapping.OptionalBoolean;
+import org.apache.commons.lang3.ArrayUtils;
 
 import java.lang.reflect.Field;
 import java.util.Map;
@@ -39,7 +40,9 @@ public class DateMappingParser extends AbstractMappingParser<DateMapping> {
     @Override
     public void addMapping(Map<String, Object> mapping, DateMapping annotation) {
         mapping.put("boost", annotation.boost());
-        mapping.put("copy_to", annotation.copyTo());
+        if (ArrayUtils.isNotEmpty(annotation.copyTo())) {
+            mapping.put("copy_to", annotation.copyTo());
+        }
         mapping.put("doc_values", annotation.docValues());
         if (!"DEFAULT".equals(annotation.format())) {
             mapping.put("format", annotation.format());
