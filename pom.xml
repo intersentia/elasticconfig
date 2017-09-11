@@ -6,7 +6,7 @@
 
     <groupId>be.intersentia.elasticsearch</groupId>
     <artifactId>mapping_annotations</artifactId>
-    <version>0.5.1</version>
+    <version>0.5.2</version>
 
     <dependencies>
         <dependency>
