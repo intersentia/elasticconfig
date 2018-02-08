@@ -50,11 +50,11 @@ public class ObjectMappingParser extends AbstractMappingParser<ObjectMapping> {
 
     @Override
     public void addMapping(Map<String, Object> mapping, ObjectMapping annotation) {
-        mapping.put("dynamic", annotation.dynamic());
+        mapping.put("dynamic", annotation.dynamic().name().toLowerCase());
         mapping.put("enabled", annotation.enabled());
         mapping.put("type", "object");
         if (annotation.includeInAll() != OptionalBoolean.DEFAULT) {
-            mapping.put("include_in_all", annotation.includeInAll());
+            mapping.put("include_in_all", annotation.includeInAll().name().toLowerCase());
         }
         if (field == null) {
             mapping.put("properties", new HashMap<String, Object>());

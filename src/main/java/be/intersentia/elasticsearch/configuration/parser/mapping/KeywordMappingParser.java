@@ -47,7 +47,7 @@ public class KeywordMappingParser extends AbstractMappingParser<KeywordMapping> 
         mapping.put("eager_global_ordinals", annotation.eagerGlobalOrdinals());
         mapping.put("ignore_above", annotation.ignoreAbove());
         if (annotation.includeInAll() != OptionalBoolean.DEFAULT) {
-            mapping.put("include_in_all", annotation.includeInAll());
+            mapping.put("include_in_all", annotation.includeInAll().name().toLowerCase());
         }
         mapping.put("index", annotation.index());
         mapping.put("index_options", annotation.indexOptions());

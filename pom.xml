@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>be.intersentia.elasticsearch</groupId>
-    <artifactId>mapping_annotations</artifactId>
+    <artifactId>mapping_annotations_es6</artifactId>
     <version>0.5.2</version>
 
     <dependencies>

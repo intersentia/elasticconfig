@@ -43,9 +43,9 @@ public class NestedMappingParser extends AbstractMappingParser<NestedMapping> {
 
     @Override
     public void addMapping(Map<String, Object> mapping, NestedMapping annotation) {
-        mapping.put("dynamic", annotation.dynamic());
+        mapping.put("dynamic", annotation.dynamic().name().toLowerCase());
         if (annotation.includeInAll() != OptionalBoolean.DEFAULT) {
-            mapping.put("include_in_all", annotation.includeInAll());
+            mapping.put("include_in_all", annotation.includeInAll().name().toLowerCase());
         }
         if (field == null) {
             mapping.put("properties", new HashMap<String, String>());
