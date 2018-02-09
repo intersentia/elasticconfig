@@ -49,3 +49,12 @@ class Example {
     }
 }
 ```
+
+Alternatively, you can ask ElasticConfig to automatically create indices for all types in a certain package which are annotated with @Index
+```java
+class Example {
+    public static void main(String[] args) {
+        ConfigurationScanner.scan("be.intersentia.elasticsearch").configure();
+    }
+}
+```
