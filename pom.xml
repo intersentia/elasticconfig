@@ -5,8 +5,37 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>be.intersentia.elasticsearch</groupId>
-    <artifactId>mapping_annotations_es6</artifactId>
-    <version>0.5.2</version>
+    <artifactId>mapping_annotations</artifactId>
+    <version>0.6.0</version>
+
+    <licenses>
+        <license>
+            <name>Apache License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <name>Stijn Arnauts</name>
+            <email>s.arnauts@intersentia.be</email>
+            <organization>Intersentia</organization>
+            <organizationUrl>http://www.intersentia.be/</organizationUrl>
+        </developer>
+        <developer>
+            <name>Bert Volders</name>
+            <email>b.volders@intersentia.be</email>
+            <organization>Intersentia</organization>
+            <organizationUrl>http://www.intersentia.be/</organizationUrl>
+        </developer>
+    </developers>
+
+    <scm>
+        <connection>scm:git:git://github.com/intersentia/elasticconfig.git</connection>
+        <developerConnection>scm:git:git@github.com:intersentia/elasticconfig.git</developerConnection>
+        <url>https://github.com/intersentia/elasticconfig</url>
+    </scm>
 
     <dependencies>
         <dependency>
@@ -67,16 +96,4 @@
             </plugin>
         </plugins>
     </build>
-    <distributionManagement>
-        <repository>
-            <id>71644c600078</id>
-            <name>71644c600078-releases</name>
-            <url>http://artifactory.intersentia.be/artifactory/libs-release-local</url>
-        </repository>
-        <snapshotRepository>
-            <id>71644c600078</id>
-            <name>71644c600078-snapshots</name>
-            <url>http://artifactory.intersentia.be/artifactory/libs-snapshot-local</url>
-        </snapshotRepository>
-    </distributionManagement>
 </project>
