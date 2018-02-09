@@ -2,7 +2,7 @@
 ## Introduction
 ElasticConfig Mapping Annotations is a Java project which allows you to automatically configure the analysis and mapping of an ElasticSearch index based on annotations.
 
-##Usage
+## Usage
 First create an annotated POJO representing your ElasticSearch type:
 ```java
 @Analysis(
