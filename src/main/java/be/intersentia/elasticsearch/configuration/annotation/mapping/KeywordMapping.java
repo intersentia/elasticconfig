@@ -88,7 +88,7 @@ public @interface KeywordMapping {
      What information should be stored in the index, for scoring purposes. Defaults to docs but can also be set to freqs
      to take term frequency into account when computing scores.
      */
-    IndexOptions indexOptions() default IndexOptions.docs;
+    IndexOptions indexOptions() default IndexOptions.DEFAULT;
 
     /**
      * Whether field-length should be taken into account when scoring queries. Accepts true or false (default).

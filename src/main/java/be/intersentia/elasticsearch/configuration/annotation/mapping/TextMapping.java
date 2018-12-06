@@ -93,7 +93,7 @@ public @interface TextMapping {
     /**
      * What information should be stored in the index, for search and highlighting purposes. Defaults to positions.
      */
-    IndexOptions indexOptions() default IndexOptions.positions;
+    IndexOptions indexOptions() default IndexOptions.DEFAULT;
 
     /**
      * Whether field-length should be taken into account when scoring queries. Accepts true (default) or false.

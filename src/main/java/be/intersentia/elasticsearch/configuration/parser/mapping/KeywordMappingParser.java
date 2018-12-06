@@ -1,5 +1,6 @@
 package be.intersentia.elasticsearch.configuration.parser.mapping;
 
+import be.intersentia.elasticsearch.configuration.annotation.mapping.IndexOptions;
 import be.intersentia.elasticsearch.configuration.annotation.mapping.KeywordMapping;
 import be.intersentia.elasticsearch.configuration.annotation.mapping.KeywordMappings;
 import be.intersentia.elasticsearch.configuration.annotation.mapping.OptionalBoolean;
@@ -51,6 +52,9 @@ public class KeywordMappingParser extends AbstractMappingParser<KeywordMapping> 
         }
         mapping.put("index", annotation.index());
         mapping.put("index_options", annotation.indexOptions());
+        if (annotation.indexOptions() != IndexOptions.DEFAULT) {
+            mapping.put("index_options", annotation.indexOptions());
+        }
         mapping.put("norms", annotation.norms());
         if (!"DEFAULT".equals(annotation.nullValue())) {
             mapping.put("null_value", annotation.nullValue());

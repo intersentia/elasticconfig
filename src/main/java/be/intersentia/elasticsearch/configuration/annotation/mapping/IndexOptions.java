@@ -4,6 +4,12 @@ package be.intersentia.elasticsearch.configuration.annotation.mapping;
  * What information should be stored in the index, for search and highlighting purposes. Defaults to positions.
  */
 public enum IndexOptions {
+
+    /**
+     * Analyzed string fields use positions as the default, and all other fields use docs as the default.
+     */
+    DEFAULT,
+
     /**
      * Only the doc number is indexed. Can answer the question Does this term exist in this field?
      */

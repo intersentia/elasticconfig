@@ -1,5 +1,6 @@
 package be.intersentia.elasticsearch.configuration.parser.mapping;
 
+import be.intersentia.elasticsearch.configuration.annotation.mapping.IndexOptions;
 import be.intersentia.elasticsearch.configuration.annotation.mapping.OptionalBoolean;
 import be.intersentia.elasticsearch.configuration.annotation.mapping.TextMapping;
 import be.intersentia.elasticsearch.configuration.annotation.mapping.TextMappings;
@@ -56,7 +57,9 @@ public class TextMappingParser extends AbstractMappingParser<TextMapping> {
             mapping.put("include_in_all", annotation.includeInAll().name().toLowerCase());
         }
         mapping.put("index", annotation.index());
-        mapping.put("index_options", annotation.indexOptions());
+        if (annotation.indexOptions() != IndexOptions.DEFAULT) {
+            mapping.put("index_options", annotation.indexOptions());
+        }
         mapping.put("norms", annotation.norms());
         if (annotation.positionIncrementGap() != 100) {
             mapping.put("position_increment_gap", annotation.positionIncrementGap());
