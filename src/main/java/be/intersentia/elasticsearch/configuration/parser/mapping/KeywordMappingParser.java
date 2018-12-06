@@ -51,7 +51,6 @@ public class KeywordMappingParser extends AbstractMappingParser<KeywordMapping> 
             mapping.put("include_in_all", annotation.includeInAll().name().toLowerCase());
         }
         mapping.put("index", annotation.index());
-        mapping.put("index_options", annotation.indexOptions());
         if (annotation.indexOptions() != IndexOptions.DEFAULT) {
             mapping.put("index_options", annotation.indexOptions());
         }
