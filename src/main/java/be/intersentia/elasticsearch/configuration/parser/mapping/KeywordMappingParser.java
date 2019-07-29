@@ -47,9 +47,6 @@ public class KeywordMappingParser extends AbstractMappingParser<KeywordMapping> 
         mapping.put("doc_values", annotation.docValues());
         mapping.put("eager_global_ordinals", annotation.eagerGlobalOrdinals());
         mapping.put("ignore_above", annotation.ignoreAbove());
-        if (annotation.includeInAll() != OptionalBoolean.DEFAULT) {
-            mapping.put("include_in_all", annotation.includeInAll().name().toLowerCase());
-        }
         mapping.put("index", annotation.index());
         if (annotation.indexOptions() != IndexOptions.DEFAULT) {
             mapping.put("index_options", annotation.indexOptions());
@@ -68,5 +65,6 @@ public class KeywordMappingParser extends AbstractMappingParser<KeywordMapping> 
         if (!"DEFAULT".equals(annotation.normalizer())) {
             mapping.put("normalizer", annotation.normalizer());
         }
+        mapping.put("split_queries_on_whitespace", annotation.splitQueriesOnWhitespace());
     }
 }

@@ -3,6 +3,7 @@ package be.intersentia.elasticsearch.configuration.annotation.mapping;
 import be.intersentia.elasticsearch.configuration.parser.mapping.KeywordMappingParser;
 import be.intersentia.elasticsearch.configuration.parser.mapping.MappingParserConfiguration;
 
+import java.lang.annotation.Repeatable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
@@ -23,6 +24,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  */
 @Target({TYPE, FIELD})
 @Retention(RUNTIME)
+@Repeatable(KeywordMappings.class)
 @MappingParserConfiguration(parser = KeywordMappingParser.class)
 public @interface KeywordMapping {
 
@@ -73,12 +75,6 @@ public @interface KeywordMapping {
     int ignoreAbove() default Integer.MAX_VALUE;
 
     /**
-     * Whether or not the field value should be included in the _all field? Defaults to false if index is set to false,
-     * or if a parent object field sets includeInAll to false. Otherwise defaults to true.
-     */
-    OptionalBoolean includeInAll() default OptionalBoolean.DEFAULT;
-
-    /**
      * Should the field be searchable? Accepts true (default) or false.
      */
     boolean index() default true;
@@ -124,4 +120,10 @@ public @interface KeywordMapping {
      * GA features.
      */
     String normalizer() default "DEFAULT";
+
+    /**
+     * Whether full text queries should split the input on whitespace when building a query for this field. Accepts
+     * true or false (default).
+     */
+    boolean splitQueriesOnWhitespace() default false;
 }

@@ -1,8 +1,15 @@
 package be.intersentia.elasticsearch.configuration.annotation.analyzer;
 
-/**
- * Created by arnautssn on 20/04/2017.
- */
+import java.lang.annotation.Repeatable;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
+
+import static java.lang.annotation.ElementType.TYPE;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
+
+@Target(TYPE)
+@Retention(RUNTIME)
+@Repeatable(CharFilters.class)
 public @interface CharFilter {
     public static String HTML_STRIP = "html_strip";
     public static String MAPPING = "mapping";

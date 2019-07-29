@@ -1,8 +1,15 @@
 package be.intersentia.elasticsearch.configuration.annotation.analyzer;
 
-/**
- * Created by arnautssn on 20/04/2017.
- */
+import java.lang.annotation.Repeatable;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
+
+import static java.lang.annotation.ElementType.TYPE;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
+
+@Target(TYPE)
+@Retention(RUNTIME)
+@Repeatable(Tokenizers.class)
 public @interface Tokenizer {
     public static String STANDARD = "standard";
     public static String LETTER = "letter";

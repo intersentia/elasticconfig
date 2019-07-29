@@ -2,8 +2,8 @@ package be.intersentia.elasticsearch.configuration.factory;
 
 import be.intersentia.elasticsearch.configuration.annotation.analyzer.*;
 import org.apache.commons.collections4.MapUtils;
-import org.apache.commons.lang3.ArrayUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
@@ -16,17 +16,19 @@ import java.util.Map;
  *  into a Map object the ElasticSearch client understands.
  */
 public class AnalysisFactory {
-    private static final Logger log = Logger.getLogger(AnalysisFactory.class);
+    private static final Logger log = LogManager.getLogger(AnalysisFactory.class);
 
     public static Map<String, ?> createAnalysis(Class<?> clazz) {
         log.info("Creating ElasticSearch analysis for " + clazz.getSimpleName());
-        Map<String, Object> map = new HashMap<String, Object>();
 
         log.trace(clazz.getSimpleName() + ": Inspecting annotations");
-        Analysis analysis = clazz.getAnnotation(Analysis.class);
-        if (analysis != null) {
-            map = createAnalysis(analysis);
-        }
+        Map<String, Object> map = new HashMap<>();
+        createConfiguration(map, clazz.getAnnotationsByType(CharFilter.class));
+        createConfiguration(map, clazz.getAnnotationsByType(Tokenizer.class));
+        createConfiguration(map, clazz.getAnnotationsByType(Filter.class));
+        createConfiguration(map, clazz.getAnnotationsByType(Analyzer.class),
+                clazz.getAnnotationsByType(CustomAnalyzer.class));
+        createConfiguration(map, clazz.getAnnotationsByType(CustomNormalizer.class));
 
         ByteArrayOutputStream is = new ByteArrayOutputStream();
         if (log.isDebugEnabled()) {
@@ -38,83 +40,68 @@ public class AnalysisFactory {
         return Collections.singletonMap("analysis", map);
     }
 
-    private static Map<String, Object> createAnalysis(Analysis analysis) {
-        Map<String, Object> map = new HashMap<String, Object>();
-        if (ArrayUtils.isNotEmpty(analysis.charFilters())) {
-            map.put("char_filter", createConfiguration(analysis.charFilters()));
+    private static void createConfiguration(Map<String, Object> parentMap, CharFilter[] charFilters) {
+        if (charFilters.length > 0) {
+            Map<String, Object> map = new HashMap<>();
+            for (CharFilter charFilter : charFilters) {
+                map.put(charFilter.name(), createConfiguration(charFilter.type(), charFilter.properties()));
+            }
+            parentMap.put("char_filter", map);
         }
-        if (ArrayUtils.isNotEmpty(analysis.tokenizers())) {
-            map.put("tokenizer", createConfiguration(analysis.tokenizers()));
-        }
-        if (ArrayUtils.isNotEmpty(analysis.filters())) {
-            map.put("filter", createConfiguration(analysis.filters()));
-        }
-        if (ArrayUtils.isNotEmpty(analysis.analyzers()) || ArrayUtils.isNotEmpty(analysis.customAnalyzers())) {
-            map.put("analyzer", createConfiguration(analysis.analyzers(), analysis.customAnalyzers()));
-        }
-        if (ArrayUtils.isNotEmpty(analysis.customNormalizers())) {
-            map.put("normalizer", createConfiguration(analysis.customNormalizers()));
-        }
-        return map;
     }
 
-    private static Object createConfiguration(CharFilter[] charFilters) {
-        Map<String, Object> map = new HashMap<String, Object>();
-        for (CharFilter charFilter : charFilters) {
-            map.put(charFilter.name(), createConfiguration(charFilter.type(), charFilter.properties()));
-        }
-        return map;
-    }
-
-    private static Object createConfiguration(Tokenizer[] tokenizers) {
-        Map<String, Object> map = new HashMap<String, Object>();
+    private static void createConfiguration(Map<String, Object> parentMap, Tokenizer[] tokenizers) {
+        Map<String, Object> map = new HashMap<>();
         for (Tokenizer tokenizer : tokenizers) {
             map.put(tokenizer.name(), createConfiguration(tokenizer.type(), tokenizer.properties()));
         }
-        return map;
+            parentMap.put("tokenizer", map);
     }
 
-    private static Object createConfiguration(Filter[] filters) {
-        Map<String, Object> map = new HashMap<String, Object>();
-        for (Filter filter : filters) {
-            map.put(filter.name(), createConfiguration(filter.type(), filter.properties()));
+    private static void createConfiguration(Map<String, Object> parentMap, Filter[] filters) {
+        if (filters.length > 0) {
+            Map<String, Object> map = new HashMap<>();
+            for (Filter filter : filters) {
+                map.put(filter.name(), createConfiguration(filter.type(), filter.properties()));
+            }
+            parentMap.put("filter", map);
         }
-        return map;
     }
 
-    private static Object createConfiguration(Analyzer[] analyzers, CustomAnalyzer[] customAnalyzers) {
-        Map<String, Object> map = new HashMap<String, Object>();
-        if (analyzers != null) {
+    private static void createConfiguration(Map<String, Object> parentMap, Analyzer[] analyzers,
+                                            CustomAnalyzer[] customAnalyzers) {
+        if (analyzers.length > 0 || customAnalyzers.length > 0) {
+            Map<String, Object> map = new HashMap<>();
             for (Analyzer analyzer : analyzers) {
                 map.put(analyzer.name(), createConfiguration(analyzer.type(), analyzer.properties()));
             }
-        }
-        if (customAnalyzers != null) {
             for (CustomAnalyzer customAnalyzer : customAnalyzers) {
-                Map<String, Object> elementMap = new HashMap<String, Object>();
+                Map<String, Object> elementMap = new HashMap<>();
                 elementMap.put("char_filter", customAnalyzer.charFilters());
                 elementMap.put("tokenizer", customAnalyzer.tokenizer());
                 elementMap.put("filter", customAnalyzer.filters());
                 elementMap.put("position_increment_gap", customAnalyzer.positionIncrementGap());
                 map.put(customAnalyzer.name(), elementMap);
             }
+            parentMap.put("analyzer", map);
         }
-        return map;
     }
 
-    private static Object createConfiguration(CustomNormalizer[] customNormalizers) {
-        Map<String, Object> map = new HashMap<String, Object>();
-        for (CustomNormalizer customNormalizer : customNormalizers) {
-            Map<String, Object> elementMap = new HashMap<String, Object>();
-            elementMap.put("char_filter", customNormalizer.charFilters());
-            elementMap.put("filter", customNormalizer.filters());
-            map.put(customNormalizer.name(), elementMap);
+    private static void createConfiguration(Map<String, Object> parentMap, CustomNormalizer[] customNormalizers) {
+        if (customNormalizers.length > 0) {
+            Map<String, Object> map = new HashMap<>();
+            for (CustomNormalizer customNormalizer : customNormalizers) {
+                Map<String, Object> elementMap = new HashMap<>();
+                elementMap.put("char_filter", customNormalizer.charFilters());
+                elementMap.put("filter", customNormalizer.filters());
+                map.put(customNormalizer.name(), elementMap);
+            }
+            parentMap.put("normalizer", map);
         }
-        return map;
     }
 
-    private static Object createConfiguration(String type, Property[] properties) {
-        Map<String, Object> map = new HashMap<String, Object>();
+    private static Map<String, Object> createConfiguration(String type, Property[] properties) {
+        Map<String, Object> map = new HashMap<>();
         map.put("type", type);
         for(Property property : properties) {
             map.put(property.key(), property.value());

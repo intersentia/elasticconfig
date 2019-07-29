@@ -18,5 +18,5 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @MultipleMappingParserConfiguration(parser = TextMappingParser.class)
 public @interface TextMappings {
 
-    TextMapping[] value() default {};
+    TextMapping[] value();
 }

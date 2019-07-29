@@ -1,32 +1,41 @@
 package be.intersentia.elasticsearch.configuration;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
 public class ConfigurationScannerTest {
-    private static Logger log = Logger.getLogger(ConfigurationScannerTest.class);
-
+    private static Logger log = LogManager.getLogger(ConfigurationScannerTest.class);
 
     @Test
-    public void testScan() throws Exception {
+    public void testScan() {
         ConfigurationScanner scanner = ConfigurationScanner.scan("be.intersentia.elasticsearch");
-
-        assertThat(scanner.searchableClasses.size(), is(2));
+        List<CreateIndexResult> results = scanner.configure();
+        assertThat(scanner.getIndices().size(), is(2));
+        results.forEach(i -> log.info(i.getMapping()));
     }
 
     @Test
-    public void testConfigure() throws Exception {
+    public void testConfigure() {
         ConfigurationScanner scanner = ConfigurationScanner.scan("be.intersentia.elasticsearch");
-        List<CreateIndexResult> indices = scanner.configure();
+        List<CreateIndexResult> results = scanner.configure();
+        CreateIndexResult result1 = getResult(results, "TestModel");
+        assertThat(result1.getMapping().size(), is(2));
+        CreateIndexResult result2 = getResult(results, "TestModel2");
+        assertThat(result2.getMapping().size(), is(3));
+    }
 
-        indices.forEach(i -> log.info(i.getMapping()));
-        assertThat(indices.size(), is(1));
-        assertThat(indices.get(0).getMapping().size(), is(2));
-
+    private CreateIndexResult getResult(List<CreateIndexResult> results, String index) {
+        Optional<CreateIndexResult> optional = results.stream().filter((e) -> e.getIndex().equals(index)).findFirst();
+        if (!optional.isPresent()) {
+            throw new IllegalStateException("No configuration for " + index);
+        }
+        return optional.get();
     }
 }

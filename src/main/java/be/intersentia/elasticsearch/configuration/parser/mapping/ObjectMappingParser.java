@@ -53,18 +53,14 @@ public class ObjectMappingParser extends AbstractMappingParser<ObjectMapping> {
         mapping.put("dynamic", annotation.dynamic().name().toLowerCase());
         mapping.put("enabled", annotation.enabled());
         mapping.put("type", "object");
-        if (annotation.includeInAll() != OptionalBoolean.DEFAULT) {
-            mapping.put("include_in_all", annotation.includeInAll().name().toLowerCase());
-        }
         if (field == null) {
             mapping.put("properties", new HashMap<String, Object>());
         } else if (Collection.class.isAssignableFrom(field.getType())) {
-
             ParameterizedType listType = (ParameterizedType) field.getGenericType();
             Class<?> listClass = (Class<?>) listType.getActualTypeArguments()[0];
-            mapping.putAll(MappingFactory.createMapping(listClass, false, false, Optional.empty(), Optional.of(clazz)));
+            mapping.putAll(MappingFactory.createMapping(listClass, false, clazz));
         } else {
-            mapping.putAll(MappingFactory.createMapping(field.getType(), false, false, Optional.empty(), Optional.of(clazz)));
+            mapping.putAll(MappingFactory.createMapping(field.getType(), false, clazz));
         }
     }
 }

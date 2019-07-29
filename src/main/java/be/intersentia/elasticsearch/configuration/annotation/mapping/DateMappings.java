@@ -18,5 +18,5 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @MultipleMappingParserConfiguration(parser = DateMappingParser.class)
 public @interface DateMappings {
 
-    DateMapping[] value() default {};
+    DateMapping[] value();
 }

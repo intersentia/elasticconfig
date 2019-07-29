@@ -18,5 +18,5 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @MultipleMappingParserConfiguration(parser = NumericMappingParser.class)
 public @interface NumericMappings {
 
-    NumericMapping[] value() default {};
+    NumericMapping[] value();
 }

@@ -9,7 +9,7 @@
     <description>ElasticConfig Mapping Annotations is a Java project which allows you to automatically configure the analysis and mapping of an ElasticSearch index based on annotations</description>
     <url>https://github.com/intersentia/elasticconfig</url>
     <artifactId>mapping_annotations</artifactId>
-    <version>0.6.2</version>
+    <version>0.7.0</version>
 
     <licenses>
         <license>
@@ -42,11 +42,6 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>log4j-over-slf4j</artifactId>
-            <version>1.7.25</version>
-        </dependency>
-        <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-collections4</artifactId>
             <version>4.1</version>
@@ -56,11 +51,15 @@
             <artifactId>commons-lang3</artifactId>
             <version>3.5</version>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/io.github.lukehutch/fast-classpath-scanner -->
+        <dependency>
+            <groupId>io.github.classgraph</groupId>
+            <artifactId>classgraph</artifactId>
+            <version>4.8.43</version>
+        </dependency>
         <dependency>
             <groupId>io.github.lukehutch</groupId>
             <artifactId>fast-classpath-scanner</artifactId>
-            <version>2.0.21</version>
+            <version>3.1.13</version>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
@@ -83,7 +82,13 @@
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-api</artifactId>
-            <version>2.7</version>
+            <version>2.12.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+            <version>2.12.0</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 

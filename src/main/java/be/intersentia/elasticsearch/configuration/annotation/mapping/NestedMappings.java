@@ -18,5 +18,5 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @MultipleMappingParserConfiguration(parser = NestedMappingParser.class)
 public @interface NestedMappings {
 
-    NestedMapping[] value() default {};
+    NestedMapping[] value();
 }

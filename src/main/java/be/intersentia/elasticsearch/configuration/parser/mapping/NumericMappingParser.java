@@ -68,9 +68,6 @@ public class NumericMappingParser extends AbstractMappingParser<NumericMapping> 
         }
         mapping.put("doc_values", annotation.docValues());
         mapping.put("ignore_malformed", annotation.ignoreMalformed());
-        if (annotation.includeInAll() != OptionalBoolean.DEFAULT) {
-            mapping.put("include_in_all", annotation.includeInAll().name().toLowerCase());
-        }
         mapping.put("index", annotation.index());
         if (!"DEFAULT".equals(annotation.nullValue())) {
             mapping.put("null_value", getNullValue(annotation.nullValue()));

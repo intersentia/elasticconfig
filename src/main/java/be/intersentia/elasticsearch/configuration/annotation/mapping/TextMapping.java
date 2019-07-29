@@ -3,6 +3,7 @@ package be.intersentia.elasticsearch.configuration.annotation.mapping;
 import be.intersentia.elasticsearch.configuration.parser.mapping.MappingParserConfiguration;
 import be.intersentia.elasticsearch.configuration.parser.mapping.TextMappingParser;
 
+import java.lang.annotation.Repeatable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
@@ -24,6 +25,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  */
 @Target({TYPE, FIELD})
 @Retention(RUNTIME)
+@Repeatable(TextMappings.class)
 @MappingParserConfiguration(parser = TextMappingParser.class)
 public @interface TextMapping {
 
@@ -80,12 +82,6 @@ public @interface TextMapping {
     FieldDataFrequencyFilter fieldDataFrequencyFilter() default @FieldDataFrequencyFilter();
 
     /**
-     * Whether or not the field value should be included in the _all field? Defaults to false if index is set to false,
-     * or if a parent object field sets includeInAll to false. Otherwise defaults to true.
-     */
-    OptionalBoolean includeInAll() default OptionalBoolean.DEFAULT;
-
-    /**
      * Should the field be searchable? Accepts true (default) or false.
      */
     boolean index() default true;
@@ -94,6 +90,21 @@ public @interface TextMapping {
      * What information should be stored in the index, for search and highlighting purposes. Defaults to positions.
      */
     IndexOptions indexOptions() default IndexOptions.DEFAULT;
+
+    /**
+     * If enabled, term prefixes of between 2 and 5 characters are indexed into a separate field. This allows prefix
+     * searches to run more efficiently, at the expense of a larger index. Set minChars and maxChars to zero to disable.
+     */
+    IndexPrefixes indexPrefixes() default @IndexPrefixes(minChars = 0, maxChars = 0);
+
+    /**
+     *
+     * If enabled, two-term word combinations (shingles) are indexed into a separate field. This allows exact phrase
+     * queries (no slop) to run more efficiently, at the expense of a larger index. Note that this works best when
+     * stopwords are not removed, as phrases containing stopwords will not use the subsidiary field and will fall back
+     * to a standard phrase query. Accepts true or false (default).
+     */
+    boolean indexPhrases() default false;
 
     /**
      * Whether field-length should be taken into account when scoring queries. Accepts true (default) or false.

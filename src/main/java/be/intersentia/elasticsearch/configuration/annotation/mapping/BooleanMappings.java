@@ -18,5 +18,5 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @MultipleMappingParserConfiguration(parser = BooleanMappingParser.class)
 public @interface BooleanMappings {
 
-    BooleanMapping[] value() default {};
+    BooleanMapping[] value();
 }

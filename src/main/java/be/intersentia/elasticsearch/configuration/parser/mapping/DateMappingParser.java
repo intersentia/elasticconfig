@@ -51,9 +51,6 @@ public class DateMappingParser extends AbstractMappingParser<DateMapping> {
             mapping.put("locale", annotation.locale());
         }
         mapping.put("ignore_malformed", annotation.ignoreMalformed());
-        if (annotation.includeInAll() != OptionalBoolean.DEFAULT) {
-            mapping.put("include_in_all", annotation.includeInAll().name().toLowerCase());
-        }
         mapping.put("index", annotation.index());
         if (!"DEFAULT".equals(annotation.nullValue())) {
             mapping.put("null_value", annotation.nullValue());

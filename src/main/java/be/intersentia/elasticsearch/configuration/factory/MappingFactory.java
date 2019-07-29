@@ -4,7 +4,8 @@ import be.intersentia.elasticsearch.configuration.annotation.templates.DynamicTe
 import be.intersentia.elasticsearch.configuration.parser.mapping.*;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
@@ -12,31 +13,41 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.*;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Function;
 
 /**
  *  This class is responsible for transforming a class annotated with various types of ElasticSearch Mapping interfaces
  *  into a Map object the ElasticSearch client understands.
  */
+@SuppressWarnings("unused")
 public class MappingFactory {
-    private static final Logger log = Logger.getLogger(MappingFactory.class);
-    static Map<String, AtomicInteger> recursiveCounts = new HashMap<>();
+    private static final Logger log = LogManager.getLogger(MappingFactory.class);
+    private static Map<String, AtomicInteger> recursiveCounts = new HashMap<>();
 
-    public static Map<String, ?> createMapping(Class<?> clazz, boolean disableDynamicProperties, boolean disableAllField, Optional<String> parent, Optional<Class<?>> parentClass) {
+    public static Map<String, ?> createMapping(Class<?> clazz, boolean disableDynamicProperties) {
+        return createMapping(clazz, disableDynamicProperties, null, null);
+    }
 
+    public static Map<String, ?> createMapping(Class<?> clazz, boolean disableDynamicProperties, String parent) {
+        return createMapping(clazz, disableDynamicProperties, parent, null);
+    }
+
+    public static Map<String, ?> createMapping(Class<?> clazz, boolean disableDynamicProperties, Class<?> parentClass) {
+        return createMapping(clazz, disableDynamicProperties, null, parentClass);
+    }
+
+    public static Map<String, ?> createMapping(Class<?> clazz, boolean disableDynamicProperties, String parent,
+                                               Class<?> parentClass) {
         log.info("Creating ElasticSearch mapping for " + clazz.getSimpleName());
-        Map<String, Object> map = new HashMap<String, Object>();
+        Map<String, Object> map = new HashMap<>();
         if (disableDynamicProperties) {
             map.put("dynamic", "strict");
         }
-        if (disableAllField) {
-            map.put("_all", Collections.singletonMap("enabled", "false"));
+        if (StringUtils.isNotBlank(parent)) {
+            map.put("_parent", Collections.singletonMap("type", parent));
         }
 
-        parent.filter(StringUtils::isNoneEmpty).ifPresent(p -> map.put("_parent", Collections.singletonMap("type", p)));
-
-        List<Map<String, Object>> templatesList = new ArrayList<Map<String, Object>>();
-        Map<String, Object> propertiesMap = new HashMap<String, Object>();
+        List<Map<String, Object>> templatesList = new ArrayList<>();
+        Map<String, Object> propertiesMap = new HashMap<>();
 
         log.trace(clazz.getSimpleName() + ": Inspecting annotations");
         Annotation[] annotations = clazz.getDeclaredAnnotations();
@@ -48,10 +59,10 @@ public class MappingFactory {
         for (Field field : getFields(clazz)) {
             log.trace(clazz.getSimpleName() + '.' + field.getName() + ": Inspecting annotations");
             annotations = field.getDeclaredAnnotations();
-            String fullName = parentClass.map(Class::getSimpleName).orElse("root") + "." + clazz.getSimpleName() + '.' + field.getName();
+            String fullName = (parentClass == null ? "root" : parentClass.getSimpleName())
+                    + "." + clazz.getSimpleName() + '.' + field.getName();
 
-            boolean isRecursive = isRecurive(field, clazz);
-            if (isRecursive) {
+            if (isRecursive(field, clazz)) {
                 AtomicInteger count = recursiveCounts.getOrDefault(fullName, new AtomicInteger(0));
                 count.incrementAndGet();
                 recursiveCounts.put(fullName, count);
@@ -80,7 +91,7 @@ public class MappingFactory {
         return map;
     }
 
-    private static boolean isRecurive(Field field, Class<?> clazz) {
+    private static boolean isRecursive(Field field, Class<?> clazz) {
         boolean result = false;
         try {
             Type type = field.getGenericType();
@@ -88,7 +99,10 @@ public class MappingFactory {
             if (type instanceof ParameterizedType) {
                 ParameterizedType pt = (ParameterizedType) type;
                 for (Type t : pt.getActualTypeArguments()) {
-                    if (t.equals(clazz)) result = true;
+                    if (t.equals(clazz)) {
+                        result = true;
+                        break;
+                    }
                 }
             }
         } catch(Exception e) {
@@ -126,7 +140,7 @@ public class MappingFactory {
             Annotation mapping = getValue(annotation, "mapping");
             AbstractMappingParser parser = mappingConfiguration.parser().getConstructor(Class.class, Field.class,
                     mapping.annotationType()).newInstance(clazz, null, mapping);
-            Map<String, Object> templateMap = new HashMap<String, Object>();
+            Map<String, Object> templateMap = new HashMap<>();
             new TemplateParser(clazz, template, parser, mapping).addTemplate(templateMap);
             templatesList.add(templateMap);
         }
@@ -136,7 +150,7 @@ public class MappingFactory {
      * Returns all non-transient, non-static fields of the given class, including inherited fields.
      */
     private static List<Field> getFields(Class<?> clazz) {
-        List<Field> fields = new ArrayList<Field>();
+        List<Field> fields = new ArrayList<>();
         while (clazz != Object.class) {
             for (Field field : clazz.getDeclaredFields()) {
                 if (!Modifier.isStatic(field.getModifiers()) && !Modifier.isTransient(field.getModifiers())) {
@@ -155,7 +169,7 @@ public class MappingFactory {
     private static void addMapping(Map<String, Object> map, Class<?> clazz, Field field,
                                                 Annotation[] annotations) {
         AbstractMappingParser<?> baseParser = null;
-        List<AbstractMappingParser<?>> nestedParsers = new ArrayList<AbstractMappingParser<?>>();
+        List<AbstractMappingParser<?>> nestedParsers = new ArrayList<>();
         for (Annotation annotation : annotations) {
             log.trace(getName(clazz, field) + ": Inspecting @" + annotation.annotationType().getSimpleName());
             try {
@@ -163,7 +177,7 @@ public class MappingFactory {
                 for (AbstractMappingParser parser : annotationParsers) {
                     if (field == null) {
                         parser.addMapping(map, nestedParsers, false);
-                    } else  if (parser.hasDefault()) {
+                    } else if (parser.hasDefault()) {
                         if (baseParser != null) {
                             throw new IllegalStateException("More than one DEFAULT Mapping found for field "
                                     + getName(clazz, field));
@@ -188,7 +202,7 @@ public class MappingFactory {
 
     private static List<AbstractMappingParser> getParsers(Class<?> clazz, Field field, Annotation annotation)
             throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
-        List<AbstractMappingParser> parsers = new ArrayList<AbstractMappingParser>();
+        List<AbstractMappingParser> parsers = new ArrayList<>();
         MappingParserConfiguration mappingConfiguration = annotation.annotationType()
                 .getAnnotation(MappingParserConfiguration.class);
         if (mappingConfiguration != null) {

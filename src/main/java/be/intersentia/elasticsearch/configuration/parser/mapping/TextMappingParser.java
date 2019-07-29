@@ -53,9 +53,6 @@ public class TextMappingParser extends AbstractMappingParser<TextMapping> {
         mapping.put("eager_global_ordinals", annotation.eagerGlobalOrdinals());
         mapping.put("fielddata", annotation.fieldData());
         addFieldDataFrequencyFilterMapping(mapping, annotation);
-        if (annotation.includeInAll() != OptionalBoolean.DEFAULT) {
-            mapping.put("include_in_all", annotation.includeInAll().name().toLowerCase());
-        }
         mapping.put("index", annotation.index());
         if (annotation.indexOptions() != IndexOptions.DEFAULT) {
             mapping.put("index_options", annotation.indexOptions());
