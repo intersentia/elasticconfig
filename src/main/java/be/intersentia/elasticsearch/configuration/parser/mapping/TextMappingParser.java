@@ -1,7 +1,6 @@
 package be.intersentia.elasticsearch.configuration.parser.mapping;
 
 import be.intersentia.elasticsearch.configuration.annotation.mapping.IndexOptions;
-import be.intersentia.elasticsearch.configuration.annotation.mapping.OptionalBoolean;
 import be.intersentia.elasticsearch.configuration.annotation.mapping.TextMapping;
 import be.intersentia.elasticsearch.configuration.annotation.mapping.TextMappings;
 import org.apache.commons.lang3.ArrayUtils;
@@ -77,7 +76,7 @@ public class TextMappingParser extends AbstractMappingParser<TextMapping> {
     private void addFieldDataFrequencyFilterMapping(Map<String, Object> mapping, TextMapping annotation) {
         TextMapping.FieldDataFrequencyFilter frequencyFilter = annotation.fieldDataFrequencyFilter();
         if (frequencyFilter.min() != 0 || frequencyFilter.max() != 0 || frequencyFilter.minSegmentSize() != 0) {
-            Map<String, Object> frequencyMap = new HashMap<String, Object>();
+            Map<String, Object> frequencyMap = new HashMap<>();
             frequencyMap.put("min", frequencyFilter.min());
             frequencyMap.put("max", frequencyFilter.max());
             frequencyMap.put("min_segment_size", frequencyFilter.minSegmentSize());

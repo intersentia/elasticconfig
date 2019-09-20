@@ -36,7 +36,7 @@ public class JoinMappingParser extends AbstractMappingParser<JoinMapping> {
 
     @Override
     public void addMapping(Map<String, Object> mapping, JoinMapping annotation) {
-        Map<String, List<String>> relations = new HashMap<String, List<String>>();
+        Map<String, List<String>> relations = new HashMap<>();
         for (Relation relation : annotation.relations()) {
             relations.put(relation.parent(), Arrays.asList(relation.child()));
         }

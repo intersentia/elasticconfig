@@ -25,7 +25,7 @@ public class TemplateParser {
     }
 
     public void addTemplate(Map<String, Object> map) {
-        Map<String, Object> annotationMap = new HashMap<String, Object>();
+        Map<String, Object> annotationMap = new HashMap<>();
         if (!"DEFAULT".equals(template.matchMappingType())) {
             annotationMap.put("match_mapping_type", template.matchMappingType());
         }
@@ -46,8 +46,8 @@ public class TemplateParser {
     }
 
     private Map<String, Object> getMapping() {
-        Map<String, Object> mappingMap = new HashMap<String, Object>();
-        parser.addMapping(mappingMap, new ArrayList<AbstractMappingParser<?>>(), true);
+        Map<String, Object> mappingMap = new HashMap<>();
+        parser.addMapping(mappingMap, new ArrayList<>(), true);
         return (Map<String, Object>) mappingMap.get(parser.getMappingName(mappingAnnotation));
     }
 }

@@ -2,15 +2,11 @@ package be.intersentia.elasticsearch.configuration.parser.mapping;
 
 import be.intersentia.elasticsearch.configuration.annotation.mapping.NestedMapping;
 import be.intersentia.elasticsearch.configuration.annotation.mapping.NestedMappings;
-import be.intersentia.elasticsearch.configuration.annotation.mapping.OptionalBoolean;
 import be.intersentia.elasticsearch.configuration.factory.MappingFactory;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * This class is responsible for translating a NestedMapping to a Map object the ElasticSearch client understands.
@@ -49,9 +45,9 @@ public class NestedMappingParser extends AbstractMappingParser<NestedMapping> {
         } else if (Collection.class.isAssignableFrom(field.getType())) {
             ParameterizedType listType = (ParameterizedType) field.getGenericType();
             Class<?> listClass = (Class<?>) listType.getActualTypeArguments()[0];
-            mapping.putAll(MappingFactory.createMapping(listClass, false,  clazz));
+            mapping.putAll(MappingFactory.createMapping(Collections.singletonList(listClass), false, clazz));
         } else {
-            mapping.putAll(MappingFactory.createMapping(field.getType(), false, clazz));
+            mapping.putAll(MappingFactory.createMapping(Collections.singletonList(field.getType()), false, clazz));
         }
     }
 }

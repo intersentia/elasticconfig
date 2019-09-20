@@ -5,7 +5,6 @@ import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
-import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -32,10 +31,9 @@ public class ConfigurationScannerTest {
     }
 
     private CreateIndexResult getResult(List<CreateIndexResult> results, String index) {
-        Optional<CreateIndexResult> optional = results.stream().filter((e) -> e.getIndex().equals(index)).findFirst();
-        if (!optional.isPresent()) {
-            throw new IllegalStateException("No configuration for " + index);
-        }
-        return optional.get();
+        return results.stream()
+                .filter((e) -> e.getIndex().equals(index))
+                .findFirst()
+                .orElseThrow(() -> new IllegalStateException("No configuration for " + index));
     }
 }

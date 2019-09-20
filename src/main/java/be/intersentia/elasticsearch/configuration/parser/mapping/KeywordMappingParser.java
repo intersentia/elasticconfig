@@ -3,7 +3,6 @@ package be.intersentia.elasticsearch.configuration.parser.mapping;
 import be.intersentia.elasticsearch.configuration.annotation.mapping.IndexOptions;
 import be.intersentia.elasticsearch.configuration.annotation.mapping.KeywordMapping;
 import be.intersentia.elasticsearch.configuration.annotation.mapping.KeywordMappings;
-import be.intersentia.elasticsearch.configuration.annotation.mapping.OptionalBoolean;
 import org.apache.commons.lang3.ArrayUtils;
 
 import java.lang.reflect.Field;

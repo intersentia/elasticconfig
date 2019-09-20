@@ -42,7 +42,7 @@ public class ObjectMappingParser extends AbstractMappingParser<ObjectMapping> {
     @Override
     public void addMapping(Map<String, Object> map, List<AbstractMappingParser<?>> nestedParsers, boolean isNested) {
         for (ObjectMapping annotation : annotations) {
-            Map<String, Object> annotationMap = new HashMap<String, Object>();
+            Map<String, Object> annotationMap = new HashMap<>();
             addMapping(annotationMap, annotation);
             map.put(getFieldName(annotation), annotationMap);
         }
@@ -58,9 +58,9 @@ public class ObjectMappingParser extends AbstractMappingParser<ObjectMapping> {
         } else if (Collection.class.isAssignableFrom(field.getType())) {
             ParameterizedType listType = (ParameterizedType) field.getGenericType();
             Class<?> listClass = (Class<?>) listType.getActualTypeArguments()[0];
-            mapping.putAll(MappingFactory.createMapping(listClass, false, clazz));
+            mapping.putAll(MappingFactory.createMapping(Collections.singletonList(listClass), false, clazz));
         } else {
-            mapping.putAll(MappingFactory.createMapping(field.getType(), false, clazz));
+            mapping.putAll(MappingFactory.createMapping(Collections.singletonList(field.getType()), false, clazz));
         }
     }
 }

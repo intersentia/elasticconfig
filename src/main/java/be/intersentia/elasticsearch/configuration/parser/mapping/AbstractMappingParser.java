@@ -48,13 +48,13 @@ public abstract class AbstractMappingParser<T extends Annotation> {
      */
     public void addMapping(Map<String, Object> map, List<AbstractMappingParser<?>> nestedParsers, boolean isNested) {
         for (T annotation : annotations) {
-            Map<String, Object> annotationMap = new HashMap<String, Object>();
+            Map<String, Object> annotationMap = new HashMap<>();
             annotationMap.put("type", getType(annotation));
             addMapping(annotationMap, annotation);
             if (!nestedParsers.isEmpty()) {
-                Map<String, Object> nestedMap = new HashMap<String, Object>();
+                Map<String, Object> nestedMap = new HashMap<>();
                 for (AbstractMappingParser<?> parser : nestedParsers) {
-                    parser.addMapping(nestedMap, new ArrayList<AbstractMappingParser<?>>(), true);
+                    parser.addMapping(nestedMap, new ArrayList<>(), true);
                 }
                 annotationMap.put("fields", nestedMap);
             }

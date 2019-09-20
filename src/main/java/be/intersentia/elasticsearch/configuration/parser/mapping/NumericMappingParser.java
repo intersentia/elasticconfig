@@ -2,7 +2,6 @@ package be.intersentia.elasticsearch.configuration.parser.mapping;
 
 import be.intersentia.elasticsearch.configuration.annotation.mapping.NumericMapping;
 import be.intersentia.elasticsearch.configuration.annotation.mapping.NumericMappings;
-import be.intersentia.elasticsearch.configuration.annotation.mapping.OptionalBoolean;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 

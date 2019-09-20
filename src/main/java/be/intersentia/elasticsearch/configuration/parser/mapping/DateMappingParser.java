@@ -2,7 +2,6 @@ package be.intersentia.elasticsearch.configuration.parser.mapping;
 
 import be.intersentia.elasticsearch.configuration.annotation.mapping.DateMapping;
 import be.intersentia.elasticsearch.configuration.annotation.mapping.DateMappings;
-import be.intersentia.elasticsearch.configuration.annotation.mapping.OptionalBoolean;
 import org.apache.commons.lang3.ArrayUtils;
 
 import java.lang.reflect.Field;
