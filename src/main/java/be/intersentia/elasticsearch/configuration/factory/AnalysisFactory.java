@@ -1,102 +1,65 @@
 package be.intersentia.elasticsearch.configuration.factory;
 
 import be.intersentia.elasticsearch.configuration.annotation.analyzer.*;
-import org.apache.commons.collections4.MapUtils;
+import be.intersentia.elasticsearch.configuration.util.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
- *  This class is responsible for transforming a class annotated with various types of ElasticSearch Analysis interfaces
- *  into a Map object the ElasticSearch client understands.
+ *  This class is responsible for transforming one or more classes annotated with various types of ElasticSearch
+ *  Analysis annotations into a Map object the ElasticSearch client understands.
  */
 public class AnalysisFactory {
     private static final Logger log = LogManager.getLogger(AnalysisFactory.class);
 
-    public static Map<String, ?> createAnalysis(Class<?> clazz) {
-        log.info("Creating ElasticSearch analysis for " + clazz.getSimpleName());
+    public static Map<String, ?> createAnalysis(List<Class<?>> classes) {
+        String label = StringUtils.join(classes, Class::getSimpleName, ", ");
+        log.info("Creating ElasticSearch analysis for " + label);
 
-        log.trace(clazz.getSimpleName() + ": Inspecting annotations");
-        Map<String, Object> map = new HashMap<>();
-        createConfiguration(map, clazz.getAnnotationsByType(CharFilter.class));
-        createConfiguration(map, clazz.getAnnotationsByType(Tokenizer.class));
-        createConfiguration(map, clazz.getAnnotationsByType(Filter.class));
-        createConfiguration(map, clazz.getAnnotationsByType(Analyzer.class),
-                clazz.getAnnotationsByType(CustomAnalyzer.class));
-        createConfiguration(map, clazz.getAnnotationsByType(CustomNormalizer.class));
+        Analysis analysis = new Analysis();
+        for (Class<?> clazz : classes) {
+            log.trace(clazz.getSimpleName() + ": Inspecting annotations");
+            addToAnalysis(analysis, clazz);
+        }
 
-        ByteArrayOutputStream is = new ByteArrayOutputStream();
+        Map<String, Object> map = analysis.toMap();
         if (log.isDebugEnabled()) {
-            PrintStream stream = new PrintStream(is);
-            MapUtils.verbosePrint(stream, clazz.getSimpleName(), map);
-            stream.close();
-            log.debug("Returning analysis for " + is.toString());
+            log.debug("Returning analysis for " + StringUtils.prettyPrint(label, map));
         }
         return Collections.singletonMap("analysis", map);
     }
 
-    private static void createConfiguration(Map<String, Object> parentMap, CharFilter[] charFilters) {
-        if (charFilters.length > 0) {
-            Map<String, Object> map = new HashMap<>();
-            for (CharFilter charFilter : charFilters) {
-                map.put(charFilter.name(), createConfiguration(charFilter.type(), charFilter.properties()));
-            }
-            parentMap.put("char_filter", map);
+    private static void addToAnalysis(Analysis analysis, Class<?> clazz) {
+        for (CharFilter charFilter : clazz.getAnnotationsByType(CharFilter.class)) {
+            analysis.charFilters.put(charFilter.name(), createConfiguration(charFilter.type(), charFilter.properties()));
         }
-    }
-
-    private static void createConfiguration(Map<String, Object> parentMap, Tokenizer[] tokenizers) {
-        Map<String, Object> map = new HashMap<>();
-        for (Tokenizer tokenizer : tokenizers) {
-            map.put(tokenizer.name(), createConfiguration(tokenizer.type(), tokenizer.properties()));
+        for (Tokenizer tokenizer : clazz.getAnnotationsByType(Tokenizer.class)) {
+            analysis.tokenizers.put(tokenizer.name(), createConfiguration(tokenizer.type(), tokenizer.properties()));
         }
-            parentMap.put("tokenizer", map);
-    }
-
-    private static void createConfiguration(Map<String, Object> parentMap, Filter[] filters) {
-        if (filters.length > 0) {
-            Map<String, Object> map = new HashMap<>();
-            for (Filter filter : filters) {
-                map.put(filter.name(), createConfiguration(filter.type(), filter.properties()));
-            }
-            parentMap.put("filter", map);
+        for (Filter filter : clazz.getAnnotationsByType(Filter.class)) {
+            analysis.filters.put(filter.name(), createConfiguration(filter.type(), filter.properties()));
         }
-    }
-
-    private static void createConfiguration(Map<String, Object> parentMap, Analyzer[] analyzers,
-                                            CustomAnalyzer[] customAnalyzers) {
-        if (analyzers.length > 0 || customAnalyzers.length > 0) {
-            Map<String, Object> map = new HashMap<>();
-            for (Analyzer analyzer : analyzers) {
-                map.put(analyzer.name(), createConfiguration(analyzer.type(), analyzer.properties()));
-            }
-            for (CustomAnalyzer customAnalyzer : customAnalyzers) {
-                Map<String, Object> elementMap = new HashMap<>();
-                elementMap.put("char_filter", customAnalyzer.charFilters());
-                elementMap.put("tokenizer", customAnalyzer.tokenizer());
-                elementMap.put("filter", customAnalyzer.filters());
-                elementMap.put("position_increment_gap", customAnalyzer.positionIncrementGap());
-                map.put(customAnalyzer.name(), elementMap);
-            }
-            parentMap.put("analyzer", map);
+        for (Analyzer analyzer : clazz.getAnnotationsByType(Analyzer.class)) {
+            analysis.analyzers.put(analyzer.name(), createConfiguration(analyzer.type(), analyzer.properties()));
         }
-    }
-
-    private static void createConfiguration(Map<String, Object> parentMap, CustomNormalizer[] customNormalizers) {
-        if (customNormalizers.length > 0) {
-            Map<String, Object> map = new HashMap<>();
-            for (CustomNormalizer customNormalizer : customNormalizers) {
-                Map<String, Object> elementMap = new HashMap<>();
-                elementMap.put("char_filter", customNormalizer.charFilters());
-                elementMap.put("filter", customNormalizer.filters());
-                map.put(customNormalizer.name(), elementMap);
-            }
-            parentMap.put("normalizer", map);
+        for (CustomAnalyzer customAnalyzer : clazz.getAnnotationsByType(CustomAnalyzer.class)) {
+            Map<String, Object> elementMap = new HashMap<>();
+            elementMap.put("char_filter", customAnalyzer.charFilters());
+            elementMap.put("tokenizer", customAnalyzer.tokenizer());
+            elementMap.put("filter", customAnalyzer.filters());
+            elementMap.put("position_increment_gap", customAnalyzer.positionIncrementGap());
+            analysis.analyzers.put(customAnalyzer.name(), elementMap);
+        }
+        for (CustomNormalizer customNormalizer : clazz.getAnnotationsByType(CustomNormalizer.class)) {
+            Map<String, Object> elementMap = new HashMap<>();
+            elementMap.put("char_filter", customNormalizer.charFilters());
+            elementMap.put("filter", customNormalizer.filters());
+            analysis.normalizers.put(customNormalizer.name(), elementMap);
         }
     }
 
@@ -107,5 +70,23 @@ public class AnalysisFactory {
             map.put(property.key(), property.value());
         }
         return map;
+    }
+
+    private static class Analysis {
+        private Map<String, Object> charFilters = new HashMap<>();
+        private Map<String, Object> tokenizers = new HashMap<>();
+        private Map<String, Object> filters = new HashMap<>();
+        private Map<String, Object> analyzers = new HashMap<>();
+        private Map<String, Object> normalizers = new HashMap<>();
+
+        private Map<String, Object> toMap() {
+            Map<String, Object> map = new HashMap<>();
+            if (!charFilters.isEmpty()) map.put("char_filter", charFilters);
+            if (!tokenizers.isEmpty()) map.put("tokenizer", tokenizers);
+            if (!filters.isEmpty()) map.put("filter", filters);
+            if (!analyzers.isEmpty()) map.put("analyzer", analyzers);
+            if (!normalizers.isEmpty()) map.put("normalizer", normalizers);
+            return map;
+        }
     }
 }

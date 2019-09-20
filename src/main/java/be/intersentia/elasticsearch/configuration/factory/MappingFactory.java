@@ -2,76 +2,75 @@ package be.intersentia.elasticsearch.configuration.factory;
 
 import be.intersentia.elasticsearch.configuration.annotation.templates.DynamicTemplate;
 import be.intersentia.elasticsearch.configuration.parser.mapping.*;
-import org.apache.commons.collections4.MapUtils;
-import org.apache.commons.lang3.StringUtils;
+import be.intersentia.elasticsearch.configuration.util.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.*;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- *  This class is responsible for transforming a class annotated with various types of ElasticSearch Mapping interfaces
- *  into a Map object the ElasticSearch client understands.
+ *  This class is responsible for transforming one or more classes annotated with various types of ElasticSearch Mapping
+ *  annotations into a Map object the ElasticSearch client understands.
  */
 @SuppressWarnings("unused")
 public class MappingFactory {
     private static final Logger log = LogManager.getLogger(MappingFactory.class);
     private static Map<String, AtomicInteger> recursiveCounts = new HashMap<>();
 
-    public static Map<String, ?> createMapping(Class<?> clazz, boolean disableDynamicProperties) {
-        return createMapping(clazz, disableDynamicProperties, null, null);
+    public static Map<String, ?> createMapping(List<Class<?>> classes, boolean disableDynamicProperties) {
+        return createMapping(classes, disableDynamicProperties, null, null);
     }
 
-    public static Map<String, ?> createMapping(Class<?> clazz, boolean disableDynamicProperties, String parent) {
-        return createMapping(clazz, disableDynamicProperties, parent, null);
+    public static Map<String, ?> createMapping(List<Class<?>> classes, boolean disableDynamicProperties, String parent) {
+        return createMapping(classes, disableDynamicProperties, parent, null);
     }
 
-    public static Map<String, ?> createMapping(Class<?> clazz, boolean disableDynamicProperties, Class<?> parentClass) {
-        return createMapping(clazz, disableDynamicProperties, null, parentClass);
+    public static Map<String, ?> createMapping(List<Class<?>> classes, boolean disableDynamicProperties, Class<?> parentClass) {
+        return createMapping(classes, disableDynamicProperties, null, parentClass);
     }
 
-    public static Map<String, ?> createMapping(Class<?> clazz, boolean disableDynamicProperties, String parent,
+    public static Map<String, ?> createMapping(List<Class<?>> classes, boolean disableDynamicProperties, String parent,
                                                Class<?> parentClass) {
-        log.info("Creating ElasticSearch mapping for " + clazz.getSimpleName());
+        String label = StringUtils.join(classes, Class::getSimpleName, ", ");
+        log.info("Creating ElasticSearch mapping for " + label);
         Map<String, Object> map = new HashMap<>();
         if (disableDynamicProperties) {
             map.put("dynamic", "strict");
         }
-        if (StringUtils.isNotBlank(parent)) {
+        if (org.apache.commons.lang3.StringUtils.isNotBlank(parent)) {
             map.put("_parent", Collections.singletonMap("type", parent));
         }
 
         List<Map<String, Object>> templatesList = new ArrayList<>();
         Map<String, Object> propertiesMap = new HashMap<>();
 
-        log.trace(clazz.getSimpleName() + ": Inspecting annotations");
-        Annotation[] annotations = clazz.getDeclaredAnnotations();
-        addTemplates(templatesList, clazz, annotations);
-        addMapping(propertiesMap, clazz, null, annotations);
+        for (Class<?> clazz : classes) {
+            log.trace(clazz.getSimpleName() + ": Inspecting annotations");
+            Annotation[] annotations = clazz.getDeclaredAnnotations();
 
+            addTemplates(templatesList, clazz, annotations);
+            addMapping(propertiesMap, clazz, null, annotations);
 
+            for (Field field : getFields(clazz)) {
+                log.trace(clazz.getSimpleName() + '.' + field.getName() + ": Inspecting annotations");
+                annotations = field.getDeclaredAnnotations();
+                String fullName = (parentClass == null ? "root" : parentClass.getSimpleName())
+                        + "." + clazz.getSimpleName() + '.' + field.getName();
 
-        for (Field field : getFields(clazz)) {
-            log.trace(clazz.getSimpleName() + '.' + field.getName() + ": Inspecting annotations");
-            annotations = field.getDeclaredAnnotations();
-            String fullName = (parentClass == null ? "root" : parentClass.getSimpleName())
-                    + "." + clazz.getSimpleName() + '.' + field.getName();
-
-            if (isRecursive(field, clazz)) {
-                AtomicInteger count = recursiveCounts.getOrDefault(fullName, new AtomicInteger(0));
-                count.incrementAndGet();
-                recursiveCounts.put(fullName, count);
-                if (count.intValue() < 5) addMapping(propertiesMap, clazz, field, annotations);
-                else {
-                    log.warn("ignoring " + fullName);
-                    recursiveCounts.put(fullName, new AtomicInteger(0));
-                }
-            } else addMapping(propertiesMap, clazz, field, annotations);
+                if (isRecursive(field, clazz)) {
+                    AtomicInteger count = recursiveCounts.getOrDefault(fullName, new AtomicInteger(0));
+                    count.incrementAndGet();
+                    recursiveCounts.put(fullName, count);
+                    if (count.intValue() < 5) addMapping(propertiesMap, clazz, field, annotations);
+                    else {
+                        log.warn("ignoring " + fullName);
+                        recursiveCounts.put(fullName, new AtomicInteger(0));
+                    }
+                } else addMapping(propertiesMap, clazz, field, annotations);
+            }
         }
 
         if (!templatesList.isEmpty()) {
@@ -81,12 +80,8 @@ public class MappingFactory {
             map.put("properties", propertiesMap);
         }
 
-        ByteArrayOutputStream is = new ByteArrayOutputStream();
         if (log.isDebugEnabled()) {
-            PrintStream stream = new PrintStream(is);
-            MapUtils.verbosePrint(stream, clazz.getSimpleName(), map);
-            stream.close();
-            log.debug("Returning mapping for " + is.toString());
+            log.debug("Returning mapping for " + StringUtils.prettyPrint(label, map));
         }
         return map;
     }
@@ -173,8 +168,8 @@ public class MappingFactory {
         for (Annotation annotation : annotations) {
             log.trace(getName(clazz, field) + ": Inspecting @" + annotation.annotationType().getSimpleName());
             try {
-                List<AbstractMappingParser> annotationParsers = getParsers(clazz, field, annotation);
-                for (AbstractMappingParser parser : annotationParsers) {
+                List<AbstractMappingParser<?>> annotationParsers = getParsers(clazz, field, annotation);
+                for (AbstractMappingParser<?> parser : annotationParsers) {
                     if (field == null) {
                         parser.addMapping(map, nestedParsers, false);
                     } else if (parser.hasDefault()) {
@@ -200,9 +195,9 @@ public class MappingFactory {
         }
     }
 
-    private static List<AbstractMappingParser> getParsers(Class<?> clazz, Field field, Annotation annotation)
+    private static List<AbstractMappingParser<?>> getParsers(Class<?> clazz, Field field, Annotation annotation)
             throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
-        List<AbstractMappingParser> parsers = new ArrayList<>();
+        List<AbstractMappingParser<?>> parsers = new ArrayList<>();
         MappingParserConfiguration mappingConfiguration = annotation.annotationType()
                 .getAnnotation(MappingParserConfiguration.class);
         if (mappingConfiguration != null) {
@@ -220,6 +215,7 @@ public class MappingFactory {
         return parsers;
     }
 
+    @SuppressWarnings("unchecked")
     private static <T> T getValue(Annotation annotation, String member) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         return (T) annotation.annotationType().getDeclaredMethod(member).invoke(annotation);
     }

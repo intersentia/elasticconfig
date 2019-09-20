@@ -37,8 +37,8 @@ Then, use the AnalysisFactory and MappingFactory to complete your CreateIndexReq
 class Example {
     public static void main(String[] args) {
         CreateIndexRequest request = new CreateIndexRequest("library");
-        request.settings(AnalysisFactory.createAnalysis(LibraryItem.class));
-        request.mapping(LibraryItem.NAME, MappingFactory.createMapping(LibraryItem.class, true));
+        request.settings(AnalysisFactory.createAnalysis(Collections.singletonList(LibraryItem.class)));
+        request.mapping(LibraryItem.NAME, MappingFactory.createMapping(Collections.singletonList(LibraryItem.class), true));
 		CreateIndexResponse response = client.indices().create(request, RequestOptions.DEFAULT);
 		if (!response.isAcknowledged) {
 			throw new IllegalStateException("Index could not be created");

@@ -41,8 +41,9 @@ public class ConfigurationScanner {
             final Class<?> clazz = entry.getValue();
             return new CreateIndexResult(
                     indexInfo.value().equals("DEFAULT") ? clazz.getSimpleName() : indexInfo.value(),
-                    AnalysisFactory.createAnalysis(clazz),
-                    MappingFactory.createMapping(clazz, indexInfo.disableDynamicProperties(), indexInfo.parent()));
+                    AnalysisFactory.createAnalysis(Collections.singletonList(clazz)),
+                    MappingFactory.createMapping(Collections.singletonList(clazz),
+                            indexInfo.disableDynamicProperties(), indexInfo.parent()));
         }).collect(Collectors.toList());
     }
 }
