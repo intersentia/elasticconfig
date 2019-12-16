@@ -1,4 +1,4 @@
-package be.intersentia.elasticsearch.configuration.parser.mapping;
+package be.intersentia.elasticsearch.configuration.parser;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
@@ -12,6 +12,6 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  */
 @Target(ANNOTATION_TYPE)
 @Retention(RUNTIME)
-public @interface MultipleMappingParserConfiguration {
+public @interface TemplateParserConfiguration {
     Class<? extends AbstractMappingParser> parser();
 }

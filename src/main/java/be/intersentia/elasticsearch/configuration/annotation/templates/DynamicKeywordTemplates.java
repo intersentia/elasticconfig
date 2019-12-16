@@ -1,7 +1,7 @@
 package be.intersentia.elasticsearch.configuration.annotation.templates;
 
-import be.intersentia.elasticsearch.configuration.parser.mapping.KeywordMappingParser;
-import be.intersentia.elasticsearch.configuration.parser.mapping.MultipleTemplateParserConfiguration;
+import be.intersentia.elasticsearch.configuration.parser.KeywordMappingParser;
+import be.intersentia.elasticsearch.configuration.parser.MultipleTemplateParserConfiguration;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;

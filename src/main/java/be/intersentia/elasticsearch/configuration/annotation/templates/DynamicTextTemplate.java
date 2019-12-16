@@ -1,8 +1,8 @@
 package be.intersentia.elasticsearch.configuration.annotation.templates;
 
 import be.intersentia.elasticsearch.configuration.annotation.mapping.TextMapping;
-import be.intersentia.elasticsearch.configuration.parser.mapping.TemplateParserConfiguration;
-import be.intersentia.elasticsearch.configuration.parser.mapping.TextMappingParser;
+import be.intersentia.elasticsearch.configuration.parser.TemplateParserConfiguration;
+import be.intersentia.elasticsearch.configuration.parser.TextMappingParser;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;

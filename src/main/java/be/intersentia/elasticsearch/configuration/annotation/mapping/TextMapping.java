@@ -1,7 +1,7 @@
 package be.intersentia.elasticsearch.configuration.annotation.mapping;
 
-import be.intersentia.elasticsearch.configuration.parser.mapping.MappingParserConfiguration;
-import be.intersentia.elasticsearch.configuration.parser.mapping.TextMappingParser;
+import be.intersentia.elasticsearch.configuration.parser.MappingParserConfiguration;
+import be.intersentia.elasticsearch.configuration.parser.TextMappingParser;
 
 import java.lang.annotation.Repeatable;
 import java.lang.annotation.Retention;
@@ -82,6 +82,14 @@ public @interface TextMapping {
     FieldDataFrequencyFilter fieldDataFrequencyFilter() default @FieldDataFrequencyFilter();
 
     /**
+     * Whether or not the field value should be included in the _all field? Defaults to false if index is set to false,
+     * or if a parent object field sets includeInAll to false. Otherwise defaults to true.
+     * @deprecated Deleted in ElasticSearch 7.0
+     */
+    @Deprecated
+    OptionalBoolean includeInAll() default OptionalBoolean.DEFAULT;
+
+    /**
      * Should the field be searchable? Accepts true (default) or false.
      */
     boolean index() default true;
@@ -94,6 +102,7 @@ public @interface TextMapping {
     /**
      * If enabled, term prefixes of between 2 and 5 characters are indexed into a separate field. This allows prefix
      * searches to run more efficiently, at the expense of a larger index. Set minChars and maxChars to zero to disable.
+     * @since Added in ElasticSearch 7.0
      */
     IndexPrefixes indexPrefixes() default @IndexPrefixes(minChars = 0, maxChars = 0);
 
@@ -103,6 +112,7 @@ public @interface TextMapping {
      * queries (no slop) to run more efficiently, at the expense of a larger index. Note that this works best when
      * stopwords are not removed, as phrases containing stopwords will not use the subsidiary field and will fall back
      * to a standard phrase query. Accepts true or false (default).
+     * @since Added in ElasticSearch 7.0
      */
     boolean indexPhrases() default false;
 

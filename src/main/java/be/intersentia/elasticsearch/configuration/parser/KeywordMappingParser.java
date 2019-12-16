@@ -1,8 +1,9 @@
-package be.intersentia.elasticsearch.configuration.parser.mapping;
+package be.intersentia.elasticsearch.configuration.parser;
 
 import be.intersentia.elasticsearch.configuration.annotation.mapping.IndexOptions;
 import be.intersentia.elasticsearch.configuration.annotation.mapping.KeywordMapping;
 import be.intersentia.elasticsearch.configuration.annotation.mapping.KeywordMappings;
+import be.intersentia.elasticsearch.configuration.annotation.mapping.OptionalBoolean;
 import org.apache.commons.lang3.ArrayUtils;
 
 import java.lang.reflect.Field;
@@ -45,6 +46,9 @@ public class KeywordMappingParser extends AbstractMappingParser<KeywordMapping> 
         }
         mapping.put("doc_values", annotation.docValues());
         mapping.put("eager_global_ordinals", annotation.eagerGlobalOrdinals());
+        if (annotation.includeInAll() != OptionalBoolean.DEFAULT) {
+            mapping.put("include_in_all", annotation.includeInAll().name().toLowerCase());
+        }
         mapping.put("ignore_above", annotation.ignoreAbove());
         mapping.put("index", annotation.index());
         if (annotation.indexOptions() != IndexOptions.DEFAULT) {
@@ -64,6 +68,8 @@ public class KeywordMappingParser extends AbstractMappingParser<KeywordMapping> 
         if (!"DEFAULT".equals(annotation.normalizer())) {
             mapping.put("normalizer", annotation.normalizer());
         }
-        mapping.put("split_queries_on_whitespace", annotation.splitQueriesOnWhitespace());
+        if (annotation.splitQueriesOnWhitespace() != OptionalBoolean.DEFAULT) {
+            mapping.put("split_queries_on_whitespace", annotation.splitQueriesOnWhitespace());
+        }
     }
 }

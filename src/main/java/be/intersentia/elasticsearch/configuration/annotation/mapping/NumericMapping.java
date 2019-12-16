@@ -1,7 +1,7 @@
 package be.intersentia.elasticsearch.configuration.annotation.mapping;
 
-import be.intersentia.elasticsearch.configuration.parser.mapping.MappingParserConfiguration;
-import be.intersentia.elasticsearch.configuration.parser.mapping.NumericMappingParser;
+import be.intersentia.elasticsearch.configuration.parser.MappingParserConfiguration;
+import be.intersentia.elasticsearch.configuration.parser.NumericMappingParser;
 
 import java.lang.annotation.Repeatable;
 import java.lang.annotation.Retention;
@@ -64,6 +64,14 @@ public @interface NumericMapping {
      * whole document.
      */
     boolean ignoreMalformed() default false;
+
+    /**
+     * Whether or not the field value should be included in the _all field? Defaults to false if index is set to false,
+     * or if a parent object field sets includeInAll to false. Otherwise defaults to true.
+     * @deprecated Deleted in ElasticSearch 7.0
+     */
+    @Deprecated
+    OptionalBoolean includeInAll() default OptionalBoolean.DEFAULT;
 
     /**
      * Should the field be searchable? Accepts true (default) or false.

@@ -1,7 +1,7 @@
 package be.intersentia.elasticsearch.configuration.annotation.mapping;
 
-import be.intersentia.elasticsearch.configuration.parser.mapping.KeywordMappingParser;
-import be.intersentia.elasticsearch.configuration.parser.mapping.MappingParserConfiguration;
+import be.intersentia.elasticsearch.configuration.parser.KeywordMappingParser;
+import be.intersentia.elasticsearch.configuration.parser.MappingParserConfiguration;
 
 import java.lang.annotation.Repeatable;
 import java.lang.annotation.Retention;
@@ -75,6 +75,14 @@ public @interface KeywordMapping {
     int ignoreAbove() default Integer.MAX_VALUE;
 
     /**
+     * Whether or not the field value should be included in the _all field? Defaults to false if index is set to false,
+     * or if a parent object field sets includeInAll to false. Otherwise defaults to true.
+     * @deprecated Deleted in ElasticSearch 7.0
+     */
+    @Deprecated
+    OptionalBoolean includeInAll() default OptionalBoolean.DEFAULT;
+
+    /**
      * Should the field be searchable? Accepts true (default) or false.
      */
     boolean index() default true;
@@ -124,6 +132,7 @@ public @interface KeywordMapping {
     /**
      * Whether full text queries should split the input on whitespace when building a query for this field. Accepts
      * true or false (default).
+     * @since Added in ElasticSearch 7.0
      */
-    boolean splitQueriesOnWhitespace() default false;
+    OptionalBoolean splitQueriesOnWhitespace() default OptionalBoolean.FALSE;
 }

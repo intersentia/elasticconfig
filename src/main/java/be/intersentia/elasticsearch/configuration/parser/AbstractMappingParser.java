@@ -1,4 +1,4 @@
-package be.intersentia.elasticsearch.configuration.parser.mapping;
+package be.intersentia.elasticsearch.configuration.parser;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;

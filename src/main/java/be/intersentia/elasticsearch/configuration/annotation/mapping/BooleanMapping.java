@@ -1,8 +1,8 @@
 package be.intersentia.elasticsearch.configuration.annotation.mapping;
 
 
-import be.intersentia.elasticsearch.configuration.parser.mapping.BooleanMappingParser;
-import be.intersentia.elasticsearch.configuration.parser.mapping.MappingParserConfiguration;
+import be.intersentia.elasticsearch.configuration.parser.BooleanMappingParser;
+import be.intersentia.elasticsearch.configuration.parser.MappingParserConfiguration;
 
 import java.lang.annotation.Repeatable;
 import java.lang.annotation.Retention;

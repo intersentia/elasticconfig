@@ -1,7 +1,7 @@
 package be.intersentia.elasticsearch.configuration.factory;
 
 import be.intersentia.elasticsearch.configuration.annotation.templates.DynamicTemplate;
-import be.intersentia.elasticsearch.configuration.parser.mapping.*;
+import be.intersentia.elasticsearch.configuration.parser.*;
 import be.intersentia.elasticsearch.configuration.util.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -133,7 +133,7 @@ public class MappingFactory {
         if (mappingConfiguration != null) {
             DynamicTemplate template = getValue(annotation, "template");
             Annotation mapping = getValue(annotation, "mapping");
-            AbstractMappingParser parser = mappingConfiguration.parser().getConstructor(Class.class, Field.class,
+            AbstractMappingParser<?> parser = mappingConfiguration.parser().getConstructor(Class.class, Field.class,
                     mapping.annotationType()).newInstance(clazz, null, mapping);
             Map<String, Object> templateMap = new HashMap<>();
             new TemplateParser(clazz, template, parser, mapping).addTemplate(templateMap);

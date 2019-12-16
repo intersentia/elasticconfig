@@ -1,4 +1,4 @@
-package be.intersentia.elasticsearch.configuration.parser.mapping;
+package be.intersentia.elasticsearch.configuration.parser;
 
 import be.intersentia.elasticsearch.configuration.annotation.mapping.*;
 import be.intersentia.elasticsearch.configuration.factory.MappingFactory;
@@ -53,6 +53,9 @@ public class ObjectMappingParser extends AbstractMappingParser<ObjectMapping> {
         mapping.put("dynamic", annotation.dynamic().name().toLowerCase());
         mapping.put("enabled", annotation.enabled());
         mapping.put("type", "object");
+        if (annotation.includeInAll() != OptionalBoolean.DEFAULT) {
+            mapping.put("include_in_all", annotation.includeInAll().name().toLowerCase());
+        }
         if (field == null) {
             mapping.put("properties", new HashMap<String, Object>());
         } else if (Collection.class.isAssignableFrom(field.getType())) {

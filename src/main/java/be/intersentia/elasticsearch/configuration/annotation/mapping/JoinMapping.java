@@ -1,7 +1,7 @@
 package be.intersentia.elasticsearch.configuration.annotation.mapping;
 
-import be.intersentia.elasticsearch.configuration.parser.mapping.JoinMappingParser;
-import be.intersentia.elasticsearch.configuration.parser.mapping.MappingParserConfiguration;
+import be.intersentia.elasticsearch.configuration.parser.JoinMappingParser;
+import be.intersentia.elasticsearch.configuration.parser.MappingParserConfiguration;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;

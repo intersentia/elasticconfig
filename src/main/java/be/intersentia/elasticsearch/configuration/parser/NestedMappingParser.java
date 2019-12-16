@@ -1,7 +1,8 @@
-package be.intersentia.elasticsearch.configuration.parser.mapping;
+package be.intersentia.elasticsearch.configuration.parser;
 
 import be.intersentia.elasticsearch.configuration.annotation.mapping.NestedMapping;
 import be.intersentia.elasticsearch.configuration.annotation.mapping.NestedMappings;
+import be.intersentia.elasticsearch.configuration.annotation.mapping.OptionalBoolean;
 import be.intersentia.elasticsearch.configuration.factory.MappingFactory;
 
 import java.lang.reflect.Field;
@@ -40,6 +41,9 @@ public class NestedMappingParser extends AbstractMappingParser<NestedMapping> {
     @Override
     public void addMapping(Map<String, Object> mapping, NestedMapping annotation) {
         mapping.put("dynamic", annotation.dynamic().name().toLowerCase());
+        if (annotation.includeInAll() != OptionalBoolean.DEFAULT) {
+            mapping.put("include_in_all", annotation.includeInAll().name().toLowerCase());
+        }
         if (field == null) {
             mapping.put("properties", new HashMap<String, String>());
         } else if (Collection.class.isAssignableFrom(field.getType())) {

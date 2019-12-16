@@ -1,8 +1,8 @@
 package be.intersentia.elasticsearch.configuration.annotation.templates;
 
 import be.intersentia.elasticsearch.configuration.annotation.mapping.DateMapping;
-import be.intersentia.elasticsearch.configuration.parser.mapping.DateMappingParser;
-import be.intersentia.elasticsearch.configuration.parser.mapping.TemplateParserConfiguration;
+import be.intersentia.elasticsearch.configuration.parser.DateMappingParser;
+import be.intersentia.elasticsearch.configuration.parser.TemplateParserConfiguration;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;

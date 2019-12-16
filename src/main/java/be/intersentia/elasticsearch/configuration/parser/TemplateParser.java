@@ -1,4 +1,4 @@
-package be.intersentia.elasticsearch.configuration.parser.mapping;
+package be.intersentia.elasticsearch.configuration.parser;
 
 import be.intersentia.elasticsearch.configuration.annotation.templates.DynamicTemplate;
 
