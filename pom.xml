@@ -9,7 +9,7 @@
     <description>ElasticConfig Mapping Annotations is a Java project which allows you to automatically configure the analysis and mapping of an ElasticSearch index based on annotations</description>
     <url>https://github.com/intersentia/elasticconfig</url>
     <artifactId>mapping_annotations</artifactId>
-    <version>0.7.2</version>
+    <version>0.7.3</version>
 
     <licenses>
         <license>
@@ -119,12 +119,12 @@
 
     <distributionManagement>
         <snapshotRepository>
-            <id>sonatype-nexus-snapshots</id>
+            <id>ossrh</id>
             <name>Sonatype Nexus snapshot repository</name>
             <url>https://oss.sonatype.org/content/repositories/snapshots</url>
         </snapshotRepository>
         <repository>
-            <id>sonatype-nexus-staging</id>
+            <id>ossrh</id>
             <name>Sonatype Nexus release repository</name>
             <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
         </repository>
@@ -174,7 +174,7 @@
                                 </goals>
                             </execution>
                         </executions>
-                    </plugin>git 
+                    </plugin>
                 </plugins>
             </build>
         </profile>
