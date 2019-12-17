@@ -1,7 +1,6 @@
 package be.intersentia.elasticsearch.configuration.parser;
 
 import be.intersentia.elasticsearch.configuration.annotation.mapping.BooleanMapping;
-import be.intersentia.elasticsearch.configuration.annotation.mapping.BooleanMappings;
 import org.apache.commons.lang3.ArrayUtils;
 
 import java.lang.reflect.Field;
@@ -16,28 +15,24 @@ public class BooleanMappingParser extends AbstractMappingParser<BooleanMapping> 
     public BooleanMappingParser(Class<?> clazz, Field field, BooleanMapping annotation) {
         super(clazz, field, annotation);
     }
-    @SuppressWarnings("unused") // This constructor is called using reflection
-    public BooleanMappingParser(Class<?> clazz, Field field, BooleanMappings annotations) {
-        super(clazz, field, annotations.value());
+
+    @Override
+    public String getFieldName() {
+        return getFieldName(annotation.field());
     }
 
     @Override
-    public String getFieldName(BooleanMapping annotation) {
-        return getFieldName(annotation, annotation.field());
-    }
-
-    @Override
-    public String getMappingName(BooleanMapping annotation) {
+    public String getMappingName() {
         return "DEFAULT";
     }
 
     @Override
-    public String getType(BooleanMapping annotation) {
+    public String getType() {
         return "boolean";
     }
 
     @Override
-    public void addMapping(Map<String, Object> mapping, BooleanMapping annotation) {
+    public void addMapping(Map<String, Object> mapping) {
         mapping.put("boost", annotation.boost());
         if (ArrayUtils.isNotEmpty(annotation.copyTo())) {
             mapping.put("copy_to", annotation.copyTo());

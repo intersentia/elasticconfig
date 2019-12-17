@@ -134,5 +134,5 @@ public @interface KeywordMapping {
      * true or false (default).
      * @since Added in ElasticSearch 7.0
      */
-    OptionalBoolean splitQueriesOnWhitespace() default OptionalBoolean.FALSE;
+    OptionalBoolean splitQueriesOnWhitespace() default OptionalBoolean.DEFAULT;
 }

@@ -135,9 +135,25 @@ public class MappingFactory {
             Annotation mapping = getValue(annotation, "mapping");
             AbstractMappingParser<?> parser = mappingConfiguration.parser().getConstructor(Class.class, Field.class,
                     mapping.annotationType()).newInstance(clazz, null, mapping);
+
             Map<String, Object> templateMap = new HashMap<>();
-            new TemplateParser(clazz, template, parser, mapping).addTemplate(templateMap);
-            templatesList.add(templateMap);
+            if (!"DEFAULT".equals(template.matchMappingType())) {
+                templateMap.put("match_mapping_type", template.matchMappingType());
+            }
+            if (!"DEFAULT".equals(template.match())) {
+                templateMap.put("match", template.match());
+            }
+            if (!"DEFAULT".equals(template.unMatch())) {
+                templateMap.put("unmatch", template.unMatch());
+            }
+            if (!"DEFAULT".equals(template.pathMatch())) {
+                templateMap.put("path_match", template.pathMatch());
+            }
+            if (!"DEFAULT".equals(template.pathUnMatch())) {
+                templateMap.put("path_unmatch", template.pathUnMatch());
+            }
+            templateMap.put("mapping", parser.getMapping());
+            templatesList.add(Collections.singletonMap(template.name(), templateMap));
         }
     }
 
@@ -171,7 +187,7 @@ public class MappingFactory {
                 List<AbstractMappingParser<?>> annotationParsers = getParsers(clazz, field, annotation);
                 for (AbstractMappingParser<?> parser : annotationParsers) {
                     if (field == null) {
-                        parser.addMapping(map, nestedParsers, false);
+                        map.put(parser.getFieldName(), parser.getMapping());
                     } else if (parser.hasDefault()) {
                         if (baseParser != null) {
                             throw new IllegalStateException("More than one DEFAULT Mapping found for field "
@@ -191,7 +207,15 @@ public class MappingFactory {
             throw new IllegalStateException("At least one DEFAULT Mapping is required for field " + getName(clazz, field));
         }
         if (baseParser != null) {
-            baseParser.addMapping(map, nestedParsers, false);
+            Map<String, Object> baseMap = baseParser.getMapping();
+            if (!nestedParsers.isEmpty()) {
+                Map<String, Object> nestedMap = new HashMap<>();
+                for (AbstractMappingParser<?> nestedParser : nestedParsers) {
+                    nestedMap.put(nestedParser.getMappingName(), nestedParser.getMapping());
+                }
+                baseMap.put("fields", nestedMap);
+            }
+            map.put(baseParser.getFieldName(), baseMap);
         }
     }
 
@@ -209,8 +233,16 @@ public class MappingFactory {
                 .getAnnotation(MultipleMappingParserConfiguration.class);
         if (multipleParserConfiguration != null) {
             log.trace(getName(clazz, field) + ": Parsing multiple with " + multipleParserConfiguration.parser().getSimpleName());
-            parsers.add(multipleParserConfiguration.parser().getConstructor(Class.class, Field.class,
-                    annotation.annotationType()).newInstance(clazz, field, annotation));
+            try {
+                Object[] values = getValue(annotation, "value");
+                for (Object value : values) {
+                    Annotation subAnnotation = (Annotation) value;
+                    parsers.add(multipleParserConfiguration.parser().getConstructor(Class.class, Field.class,
+                            subAnnotation.annotationType()).newInstance(clazz, field, subAnnotation));
+                }
+            } catch (NoSuchMethodException e) {
+                throw new IllegalStateException("Annotation " + annotation.annotationType() + " should have a value() method");
+            }
         }
         return parsers;
     }

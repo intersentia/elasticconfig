@@ -1,7 +1,6 @@
 package be.intersentia.elasticsearch.configuration.parser;
 
 import be.intersentia.elasticsearch.configuration.annotation.mapping.DateMapping;
-import be.intersentia.elasticsearch.configuration.annotation.mapping.DateMappings;
 import be.intersentia.elasticsearch.configuration.annotation.mapping.OptionalBoolean;
 import org.apache.commons.lang3.ArrayUtils;
 
@@ -17,28 +16,24 @@ public class DateMappingParser extends AbstractMappingParser<DateMapping> {
     public DateMappingParser(Class<?> clazz, Field field, DateMapping annotation) {
         super(clazz, field, annotation);
     }
-    @SuppressWarnings("unused") // This constructor is called using reflection
-    public DateMappingParser(Class<?> clazz, Field field, DateMappings annotations) {
-        super(clazz, field, annotations.value());
+
+    @Override
+    public String getFieldName() {
+        return getFieldName(annotation.field());
     }
 
     @Override
-    public String getFieldName(DateMapping annotation) {
-        return getFieldName(annotation, annotation.field());
-    }
-
-    @Override
-    public String getMappingName(DateMapping annotation) {
+    public String getMappingName() {
         return "DEFAULT";
     }
 
     @Override
-    public String getType(DateMapping annotation) {
+    public String getType() {
         return "date";
     }
 
     @Override
-    public void addMapping(Map<String, Object> mapping, DateMapping annotation) {
+    public void addMapping(Map<String, Object> mapping) {
         mapping.put("boost", annotation.boost());
         if (ArrayUtils.isNotEmpty(annotation.copyTo())) {
             mapping.put("copy_to", annotation.copyTo());

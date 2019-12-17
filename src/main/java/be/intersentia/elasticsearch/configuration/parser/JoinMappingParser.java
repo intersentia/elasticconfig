@@ -20,22 +20,22 @@ public class JoinMappingParser extends AbstractMappingParser<JoinMapping> {
     }
 
     @Override
-    public String getFieldName(JoinMapping annotation) {
-        return getFieldName(annotation, annotation.field());
+    public String getFieldName() {
+        return getFieldName(annotation.field());
     }
 
     @Override
-    public String getMappingName(JoinMapping annotation) {
+    public String getMappingName() {
         return "DEFAULT";
     }
 
     @Override
-    public String getType(JoinMapping annotation) {
+    public String getType() {
         return "join";
     }
 
     @Override
-    public void addMapping(Map<String, Object> mapping, JoinMapping annotation) {
+    public void addMapping(Map<String, Object> mapping) {
         Map<String, List<String>> relations = new HashMap<>();
         for (Relation relation : annotation.relations()) {
             relations.put(relation.parent(), Arrays.asList(relation.child()));

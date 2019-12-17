@@ -16,40 +16,24 @@ public class ObjectMappingParser extends AbstractMappingParser<ObjectMapping> {
     public ObjectMappingParser(Class<?> clazz, Field field, ObjectMapping annotation) {
         super(clazz, field, annotation);
     }
-    @SuppressWarnings("unused") // This constructor is called using reflection
-    public ObjectMappingParser(Class<?> clazz, Field field, ObjectMappings annotations) {
-        super(clazz, field, annotations.value());
+
+    @Override
+    public String getFieldName() {
+        return getFieldName(annotation.field());
     }
 
     @Override
-    public String getFieldName(ObjectMapping annotation) {
-        return getFieldName(annotation, annotation.field());
-    }
-
-    @Override
-    public String getMappingName(ObjectMapping annotation) {
+    public String getMappingName() {
         return "DEFAULT";
     }
 
     @Override
-    public String getType(ObjectMapping annotation) {
+    public String getType() {
         return "object";
     }
 
-    /**
-     * Get the Map object created based on the Mapping annotation.
-     */
     @Override
-    public void addMapping(Map<String, Object> map, List<AbstractMappingParser<?>> nestedParsers, boolean isNested) {
-        for (ObjectMapping annotation : annotations) {
-            Map<String, Object> annotationMap = new HashMap<>();
-            addMapping(annotationMap, annotation);
-            map.put(getFieldName(annotation), annotationMap);
-        }
-    }
-
-    @Override
-    public void addMapping(Map<String, Object> mapping, ObjectMapping annotation) {
+    public void addMapping(Map<String, Object> mapping) {
         mapping.put("dynamic", annotation.dynamic().name().toLowerCase());
         mapping.put("enabled", annotation.enabled());
         mapping.put("type", "object");

@@ -122,6 +122,10 @@ public @interface NumericMapping {
         HALF_FLOAT,
 
         /*A floating point that is backed by a long and a fixed scaling factor.*/
-        SCALED_FLOAT
+        SCALED_FLOAT;
+
+        public String getValue() {
+            return name().toLowerCase();
+        }
     }
 }

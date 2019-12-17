@@ -11,23 +11,22 @@ import java.util.*;
 public abstract class AbstractMappingParser<T extends Annotation> {
     protected Class<?> clazz;
     protected Field field;
-    protected List<T> annotations;
+    protected T annotation;
 
-    AbstractMappingParser(Class<?> clazz, Field field, T... annotations) {
+    AbstractMappingParser(Class<?> clazz, Field field, T annotation) {
         this.clazz = clazz;
         this.field = field;
-        this.annotations = new ArrayList<T>();
-        this.annotations.addAll(Arrays.asList(annotations));
+        this.annotation = annotation;
     }
 
-    public abstract String getFieldName(T annotation);
+    public abstract String getFieldName();
 
-    String getFieldName(T annotation, String fieldName) {
+    String getFieldName(String fieldName) {
         if (!"DEFAULT".equals(fieldName)) {
             return fieldName;
         } else if (field == null) {
             throw new IllegalArgumentException("Class " + clazz.getName() + " is annotated with an ElasticSearch "
-                    + getType(annotation) + " mapping without a fieldName. FieldName is only optional for method annotations");
+                    + getType() + " mapping without a fieldName. FieldName is only optional for method annotations");
         }
         return this.field.getName();
     }
@@ -39,37 +38,23 @@ public abstract class AbstractMappingParser<T extends Annotation> {
      * different ways for different purposes. For instance, a String field could be mapped as a TextMapping for
      * full-text search, and as a KeywordMapping for sorting or aggregations.
      */
-    public abstract String getMappingName(T annotation);
+    public abstract String getMappingName();
 
-    public abstract String getType(T annotation);
+    public abstract String getType();
 
     /**
      * Get the Map object created based on the Mapping annotation.
      */
-    public void addMapping(Map<String, Object> map, List<AbstractMappingParser<?>> nestedParsers, boolean isNested) {
-        for (T annotation : annotations) {
-            Map<String, Object> annotationMap = new HashMap<>();
-            annotationMap.put("type", getType(annotation));
-            addMapping(annotationMap, annotation);
-            if (!nestedParsers.isEmpty()) {
-                Map<String, Object> nestedMap = new HashMap<>();
-                for (AbstractMappingParser<?> parser : nestedParsers) {
-                    parser.addMapping(nestedMap, new ArrayList<>(), true);
-                }
-                annotationMap.put("fields", nestedMap);
-            }
-            map.put(isNested ? getMappingName(annotation) : getFieldName(annotation), annotationMap);
-        }
+    public Map<String, Object> getMapping() {
+        Map<String, Object> map = new HashMap<>();
+        map.put("type", getType());
+        addMapping(map);
+        return map;
     }
 
-    protected abstract void addMapping(Map<String, Object> map, T annotation);
+    protected abstract void addMapping(Map<String, Object> map);
 
     public boolean hasDefault() {
-        for (T annotation : annotations) {
-            if ("DEFAULT".equals(getMappingName(annotation))) {
-                return true;
-            }
-        }
-        return false;
+        return "DEFAULT".equals(getMappingName());
     }
 }

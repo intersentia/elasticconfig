@@ -1,7 +1,6 @@
 package be.intersentia.elasticsearch.configuration.parser;
 
 import be.intersentia.elasticsearch.configuration.annotation.mapping.NumericMapping;
-import be.intersentia.elasticsearch.configuration.annotation.mapping.NumericMappings;
 import be.intersentia.elasticsearch.configuration.annotation.mapping.OptionalBoolean;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.math.NumberUtils;
@@ -18,49 +17,41 @@ public class NumericMappingParser extends AbstractMappingParser<NumericMapping> 
     public NumericMappingParser(Class<?> clazz, Field field, NumericMapping annotation) {
         super(clazz, field, annotation);
     }
-    @SuppressWarnings("unused") // This constructor is called using reflection
-    public NumericMappingParser(Class<?> clazz, Field field, NumericMappings annotations) {
-        super(clazz, field, annotations.value());
+
+    @Override
+    public String getFieldName() {
+        return getFieldName(annotation.field());
     }
 
     @Override
-    public String getFieldName(NumericMapping annotation) {
-        return getFieldName(annotation, annotation.field());
-    }
-
-    @Override
-    public String getMappingName(NumericMapping annotation) {
+    public String getMappingName() {
         return "DEFAULT";
     }
 
     @Override
-    public String getType(NumericMapping annotation) {
-        return getNumericType(annotation).name().toLowerCase();
-    }
-
-    private NumericMapping.NumericType getNumericType(NumericMapping annotation) {
+    public String getType() {
         if (annotation.type() != NumericMapping.NumericType.DEFAULT) {
-            return annotation.type();
+            return annotation.type().getValue();
         }
         String typeName = field.getType().getSimpleName().toLowerCase();
         if (typeName.contains("long")) {
-            return NumericMapping.NumericType.LONG;
+            return NumericMapping.NumericType.LONG.getValue();
         } else if (typeName.contains("int")) {
-            return NumericMapping.NumericType.INTEGER;
+            return NumericMapping.NumericType.INTEGER.getValue();
         } else if (typeName.contains("short")) {
-            return NumericMapping.NumericType.SHORT;
+            return NumericMapping.NumericType.SHORT.getValue();
         } else if (typeName.contains("byte")) {
-            return NumericMapping.NumericType.BYTE;
+            return NumericMapping.NumericType.BYTE.getValue();
         } else if (typeName.contains("double")) {
-            return NumericMapping.NumericType.DOUBLE;
+            return NumericMapping.NumericType.DOUBLE.getValue();
         } else if (typeName.contains("float")) {
-            return NumericMapping.NumericType.FLOAT;
+            return NumericMapping.NumericType.FLOAT.getValue();
         }
-        return NumericMapping.NumericType.DOUBLE;
+        return NumericMapping.NumericType.DOUBLE.getValue();
     }
 
     @Override
-    public void addMapping(Map<String, Object> mapping, NumericMapping annotation) {
+    public void addMapping(Map<String, Object> mapping) {
         mapping.put("boost", annotation.boost());
         mapping.put("coerce", annotation.coerce());
         if (ArrayUtils.isNotEmpty(annotation.copyTo())) {

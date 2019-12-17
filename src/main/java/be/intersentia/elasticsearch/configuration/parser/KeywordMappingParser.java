@@ -2,7 +2,6 @@ package be.intersentia.elasticsearch.configuration.parser;
 
 import be.intersentia.elasticsearch.configuration.annotation.mapping.IndexOptions;
 import be.intersentia.elasticsearch.configuration.annotation.mapping.KeywordMapping;
-import be.intersentia.elasticsearch.configuration.annotation.mapping.KeywordMappings;
 import be.intersentia.elasticsearch.configuration.annotation.mapping.OptionalBoolean;
 import org.apache.commons.lang3.ArrayUtils;
 
@@ -18,28 +17,24 @@ public class KeywordMappingParser extends AbstractMappingParser<KeywordMapping> 
     public KeywordMappingParser(Class<?> clazz, Field field, KeywordMapping annotation) {
         super(clazz, field, annotation);
     }
-    @SuppressWarnings("unused") // This constructor is called using reflection
-    public KeywordMappingParser(Class<?> clazz, Field field, KeywordMappings annotations) {
-        super(clazz, field, annotations.value());
+
+    @Override
+    public String getFieldName() {
+        return getFieldName(annotation.field());
     }
 
     @Override
-    public String getFieldName(KeywordMapping annotation) {
-        return getFieldName(annotation, annotation.field());
-    }
-
-    @Override
-    public String getMappingName(KeywordMapping annotation) {
+    public String getMappingName() {
         return annotation.mappingName();
     }
 
     @Override
-    public String getType(KeywordMapping annotation) {
+    public String getType() {
         return "keyword";
     }
 
     @Override
-    public void addMapping(Map<String, Object> mapping, KeywordMapping annotation) {
+    public void addMapping(Map<String, Object> mapping) {
         mapping.put("boost", annotation.boost());
         if (ArrayUtils.isNotEmpty(annotation.copyTo())) {
             mapping.put("copy_to", annotation.copyTo());

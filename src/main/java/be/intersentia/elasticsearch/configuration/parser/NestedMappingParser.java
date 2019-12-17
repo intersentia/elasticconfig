@@ -1,7 +1,6 @@
 package be.intersentia.elasticsearch.configuration.parser;
 
 import be.intersentia.elasticsearch.configuration.annotation.mapping.NestedMapping;
-import be.intersentia.elasticsearch.configuration.annotation.mapping.NestedMappings;
 import be.intersentia.elasticsearch.configuration.annotation.mapping.OptionalBoolean;
 import be.intersentia.elasticsearch.configuration.factory.MappingFactory;
 
@@ -18,28 +17,24 @@ public class NestedMappingParser extends AbstractMappingParser<NestedMapping> {
     public NestedMappingParser(Class<?> clazz, Field field, NestedMapping annotation) {
         super(clazz, field, annotation);
     }
-    @SuppressWarnings("unused") // This constructor is called using reflection
-    public NestedMappingParser(Class<?> clazz, Field field, NestedMappings annotations) {
-        super(clazz, field, annotations.value());
+
+    @Override
+    public String getFieldName() {
+        return getFieldName(annotation.field());
     }
 
     @Override
-    public String getFieldName(NestedMapping annotation) {
-        return getFieldName(annotation, annotation.field());
-    }
-
-    @Override
-    public String getMappingName(NestedMapping annotation) {
+    public String getMappingName() {
         return "DEFAULT";
     }
 
     @Override
-    public String getType(NestedMapping annotation) {
+    public String getType() {
         return "nested";
     }
 
     @Override
-    public void addMapping(Map<String, Object> mapping, NestedMapping annotation) {
+    public void addMapping(Map<String, Object> mapping) {
         mapping.put("dynamic", annotation.dynamic().name().toLowerCase());
         if (annotation.includeInAll() != OptionalBoolean.DEFAULT) {
             mapping.put("include_in_all", annotation.includeInAll().name().toLowerCase());

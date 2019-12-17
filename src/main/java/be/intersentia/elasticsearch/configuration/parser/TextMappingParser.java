@@ -3,7 +3,6 @@ package be.intersentia.elasticsearch.configuration.parser;
 import be.intersentia.elasticsearch.configuration.annotation.mapping.IndexOptions;
 import be.intersentia.elasticsearch.configuration.annotation.mapping.OptionalBoolean;
 import be.intersentia.elasticsearch.configuration.annotation.mapping.TextMapping;
-import be.intersentia.elasticsearch.configuration.annotation.mapping.TextMappings;
 import org.apache.commons.lang3.ArrayUtils;
 
 import java.lang.reflect.Field;
@@ -19,28 +18,24 @@ public class TextMappingParser extends AbstractMappingParser<TextMapping> {
     public TextMappingParser(Class<?> clazz, Field field, TextMapping annotation) {
         super(clazz, field, annotation);
     }
-    @SuppressWarnings("unused") // This constructor is called using reflection
-    public TextMappingParser(Class<?> clazz, Field field, TextMappings annotations) {
-        super(clazz, field, annotations.value());
+
+    @Override
+    public String getFieldName() {
+        return getFieldName(annotation.field());
     }
 
     @Override
-    public String getFieldName(TextMapping annotation) {
-        return getFieldName(annotation, annotation.field());
-    }
-
-    @Override
-    public String getMappingName(TextMapping annotation) {
+    public String getMappingName() {
         return annotation.mappingName();
     }
 
     @Override
-    public String getType(TextMapping annotation) {
+    public String getType() {
         return "text";
     }
 
     @Override
-    public void addMapping(Map<String, Object> mapping, TextMapping annotation) {
+    public void addMapping(Map<String, Object> mapping) {
         if (!"DEFAULT".equals(annotation.analyzer())) {
             mapping.put("analyzer", annotation.analyzer());
         }
