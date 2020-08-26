@@ -2,7 +2,7 @@ package be.intersentia.elasticsearch.configuration.annotation.mapping;
 
 
 import be.intersentia.elasticsearch.configuration.parser.BooleanMappingParser;
-import be.intersentia.elasticsearch.configuration.parser.MappingParserConfiguration;
+import be.intersentia.elasticsearch.configuration.parser.MappingParser;
 
 import java.lang.annotation.Repeatable;
 import java.lang.annotation.Retention;
@@ -21,7 +21,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Target({TYPE, FIELD})
 @Retention(RUNTIME)
 @Repeatable(BooleanMappings.class)
-@MappingParserConfiguration(parser = BooleanMappingParser.class)
+@MappingParser(BooleanMappingParser.class)
 public @interface BooleanMapping {
 
     /**

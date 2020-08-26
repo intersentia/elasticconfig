@@ -11,7 +11,6 @@ import java.util.Map;
  */
 public class BooleanMappingParser extends AbstractMappingParser<BooleanMapping> {
 
-    @SuppressWarnings("unused") // This constructor is called using reflection
     public BooleanMappingParser(Class<?> clazz, Field field, BooleanMapping annotation) {
         super(clazz, field, annotation);
     }

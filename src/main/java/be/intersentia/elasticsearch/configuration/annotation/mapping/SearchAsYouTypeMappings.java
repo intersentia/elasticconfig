@@ -1,7 +1,7 @@
 package be.intersentia.elasticsearch.configuration.annotation.mapping;
 
 import be.intersentia.elasticsearch.configuration.parser.MultipleMappingParser;
-import be.intersentia.elasticsearch.configuration.parser.ObjectMappingParser;
+import be.intersentia.elasticsearch.configuration.parser.TextMappingParser;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
@@ -11,12 +11,12 @@ import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * This annotation encapsulates multiple ObjectMapping annotations
+ * This annotation encapsulates multiple SearchAsYouTypeMapping annotations
  */
 @Target({TYPE, FIELD})
 @Retention(RUNTIME)
-@MultipleMappingParser(ObjectMappingParser.class)
-public @interface ObjectMappings {
+@MultipleMappingParser(TextMappingParser.class)
+public @interface SearchAsYouTypeMappings {
 
-    ObjectMapping[] value();
+    SearchAsYouTypeMapping[] value();
 }

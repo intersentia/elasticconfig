@@ -1,7 +1,7 @@
 package be.intersentia.elasticsearch.configuration.annotation.mapping;
 
 import be.intersentia.elasticsearch.configuration.parser.JoinMappingParser;
-import be.intersentia.elasticsearch.configuration.parser.MappingParserConfiguration;
+import be.intersentia.elasticsearch.configuration.parser.MappingParser;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
@@ -17,7 +17,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  */
 @Target({TYPE, FIELD})
 @Retention(RUNTIME)
-@MappingParserConfiguration(parser = JoinMappingParser.class)
+@MappingParser(JoinMappingParser.class)
 public @interface JoinMapping {
 
     /**

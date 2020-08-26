@@ -14,7 +14,6 @@ import java.util.Map;
  */
 public class TextMappingParser extends AbstractMappingParser<TextMapping> {
 
-    @SuppressWarnings("unused") // This constructor is called using reflection
     public TextMappingParser(Class<?> clazz, Field field, TextMapping annotation) {
         super(clazz, field, annotation);
     }

@@ -9,16 +9,13 @@ import org.apache.logging.log4j.Logger;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.*;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  *  This class is responsible for transforming one or more classes annotated with various types of ElasticSearch Mapping
  *  annotations into a Map object the ElasticSearch client understands.
  */
-@SuppressWarnings("unused")
 public class MappingFactory {
     private static final Logger log = LogManager.getLogger(MappingFactory.class);
-    private static Map<String, AtomicInteger> recursiveCounts = new HashMap<>();
 
     public static Map<String, ?> createMapping(List<Class<?>> classes, boolean disableDynamicProperties) {
         return createMapping(classes, disableDynamicProperties, null, null);
@@ -34,6 +31,7 @@ public class MappingFactory {
 
     public static Map<String, ?> createMapping(List<Class<?>> classes, boolean disableDynamicProperties, String parent,
                                                Class<?> parentClass) {
+        Map<String, Integer> recursiveCounts = new HashMap<>();
         String label = StringUtils.join(classes, Class::getSimpleName, ", ");
         log.info("Creating ElasticSearch mapping for " + label);
         Map<String, Object> map = new HashMap<>();
@@ -61,13 +59,12 @@ public class MappingFactory {
                         + "." + clazz.getSimpleName() + '.' + field.getName();
 
                 if (isRecursive(field, clazz)) {
-                    AtomicInteger count = recursiveCounts.getOrDefault(fullName, new AtomicInteger(0));
-                    count.incrementAndGet();
-                    recursiveCounts.put(fullName, count);
-                    if (count.intValue() < 5) addMapping(propertiesMap, clazz, field, annotations);
+                    int count = recursiveCounts.getOrDefault(fullName, 0);
+                    recursiveCounts.put(fullName, ++count);
+                    if (count < 5) addMapping(propertiesMap, clazz, field, annotations);
                     else {
                         log.warn("ignoring " + fullName);
-                        recursiveCounts.put(fullName, new AtomicInteger(0));
+                        recursiveCounts.put(fullName, 0);
                     }
                 } else addMapping(propertiesMap, clazz, field, annotations);
             }
@@ -110,9 +107,9 @@ public class MappingFactory {
         for (Annotation annotation : annotations) {
             log.trace(clazz.getSimpleName() + ": Inspecting @" + annotation.annotationType().getSimpleName());
             try {
-                MultipleTemplateParserConfiguration multipleParserConfiguration = annotation.annotationType()
+                MultipleTemplateParserConfiguration multipleTemplateConfiguration = annotation.annotationType()
                         .getAnnotation(MultipleTemplateParserConfiguration.class);
-                if (multipleParserConfiguration != null) {
+                if (multipleTemplateConfiguration != null) {
                     for (Annotation subAnnotation : (Annotation[]) getValue(annotation, "value")) {
                         addTemplate(templatesList, clazz, subAnnotation);
                     }
@@ -128,12 +125,12 @@ public class MappingFactory {
 
     private static void addTemplate(List<Map<String, Object>> templatesList, Class<?> clazz, Annotation annotation)
             throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
-        TemplateParserConfiguration mappingConfiguration = annotation.annotationType()
+        TemplateParserConfiguration templateConfiguration = annotation.annotationType()
                 .getAnnotation(TemplateParserConfiguration.class);
-        if (mappingConfiguration != null) {
+        if (templateConfiguration != null) {
             DynamicTemplate template = getValue(annotation, "template");
             Annotation mapping = getValue(annotation, "mapping");
-            AbstractMappingParser<?> parser = mappingConfiguration.parser().getConstructor(Class.class, Field.class,
+            AbstractMappingParser<?> parser = templateConfiguration.value().getConstructor(Class.class, Field.class,
                     mapping.annotationType()).newInstance(clazz, null, mapping);
 
             Map<String, Object> templateMap = new HashMap<>();
@@ -222,22 +219,21 @@ public class MappingFactory {
     private static List<AbstractMappingParser<?>> getParsers(Class<?> clazz, Field field, Annotation annotation)
             throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
         List<AbstractMappingParser<?>> parsers = new ArrayList<>();
-        MappingParserConfiguration mappingConfiguration = annotation.annotationType()
-                .getAnnotation(MappingParserConfiguration.class);
+        MappingParser mappingConfiguration = annotation.annotationType().getAnnotation(MappingParser.class);
         if (mappingConfiguration != null) {
-            log.trace(getName(clazz, field) + ": Parsing with " + mappingConfiguration.parser().getSimpleName());
-            parsers.add(mappingConfiguration.parser().getConstructor(Class.class, Field.class,
+            log.trace(getName(clazz, field) + ": Parsing with " + mappingConfiguration.value().getSimpleName());
+            parsers.add(mappingConfiguration.value().getConstructor(Class.class, Field.class,
                     annotation.annotationType()).newInstance(clazz, field, annotation));
         }
-        MultipleMappingParserConfiguration multipleParserConfiguration = annotation.annotationType()
-                .getAnnotation(MultipleMappingParserConfiguration.class);
+        MultipleMappingParser multipleParserConfiguration = annotation.annotationType()
+                .getAnnotation(MultipleMappingParser.class);
         if (multipleParserConfiguration != null) {
-            log.trace(getName(clazz, field) + ": Parsing multiple with " + multipleParserConfiguration.parser().getSimpleName());
+            log.trace(getName(clazz, field) + ": Parsing multiple with " + multipleParserConfiguration.value().getSimpleName());
             try {
                 Object[] values = getValue(annotation, "value");
                 for (Object value : values) {
                     Annotation subAnnotation = (Annotation) value;
-                    parsers.add(multipleParserConfiguration.parser().getConstructor(Class.class, Field.class,
+                    parsers.add(multipleParserConfiguration.value().getConstructor(Class.class, Field.class,
                             subAnnotation.annotationType()).newInstance(clazz, field, subAnnotation));
                 }
             } catch (NoSuchMethodException e) {

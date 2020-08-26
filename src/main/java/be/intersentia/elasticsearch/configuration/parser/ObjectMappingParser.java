@@ -12,7 +12,6 @@ import java.util.*;
  */
 public class ObjectMappingParser extends AbstractMappingParser<ObjectMapping> {
 
-    @SuppressWarnings("unused") // This constructor is called using reflection
     public ObjectMappingParser(Class<?> clazz, Field field, ObjectMapping annotation) {
         super(clazz, field, annotation);
     }

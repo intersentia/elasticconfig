@@ -18,7 +18,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  */
 @Target({TYPE, FIELD})
 @Retention(RUNTIME)
-@TemplateParserConfiguration(parser = BooleanMappingParser.class)
+@TemplateParserConfiguration(value = BooleanMappingParser.class)
 public @interface DynamicBooleanTemplate {
     DynamicTemplate template();
     BooleanMapping mapping();

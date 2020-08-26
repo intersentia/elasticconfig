@@ -1,6 +1,6 @@
 package be.intersentia.elasticsearch.configuration.annotation.mapping;
 
-import be.intersentia.elasticsearch.configuration.parser.MappingParserConfiguration;
+import be.intersentia.elasticsearch.configuration.parser.MappingParser;
 import be.intersentia.elasticsearch.configuration.parser.TextMappingParser;
 
 import java.lang.annotation.Repeatable;
@@ -26,7 +26,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Target({TYPE, FIELD})
 @Retention(RUNTIME)
 @Repeatable(TextMappings.class)
-@MappingParserConfiguration(parser = TextMappingParser.class)
+@MappingParser(TextMappingParser.class)
 public @interface TextMapping {
 
     /**

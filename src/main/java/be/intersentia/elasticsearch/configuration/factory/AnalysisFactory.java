@@ -73,11 +73,11 @@ public class AnalysisFactory {
     }
 
     private static class Analysis {
-        private Map<String, Object> charFilters = new HashMap<>();
-        private Map<String, Object> tokenizers = new HashMap<>();
-        private Map<String, Object> filters = new HashMap<>();
-        private Map<String, Object> analyzers = new HashMap<>();
-        private Map<String, Object> normalizers = new HashMap<>();
+        private final Map<String, Object> charFilters = new HashMap<>();
+        private final Map<String, Object> tokenizers = new HashMap<>();
+        private final Map<String, Object> filters = new HashMap<>();
+        private final Map<String, Object> analyzers = new HashMap<>();
+        private final Map<String, Object> normalizers = new HashMap<>();
 
         private Map<String, Object> toMap() {
             Map<String, Object> map = new HashMap<>();

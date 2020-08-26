@@ -13,7 +13,6 @@ import java.util.Map;
  */
 public class KeywordMappingParser extends AbstractMappingParser<KeywordMapping> {
 
-    @SuppressWarnings("unused") // This constructor is called using reflection
     public KeywordMappingParser(Class<?> clazz, Field field, KeywordMapping annotation) {
         super(clazz, field, annotation);
     }

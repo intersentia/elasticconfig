@@ -4,12 +4,14 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
+    <!-- Use the following command to push a new release: mvn clean deploy -Prelease -->
+
     <groupId>be.intersentia.elasticsearch</groupId>
     <name>ElasticConfig Mapping Annotations</name>
     <description>ElasticConfig Mapping Annotations is a Java project which allows you to automatically configure the analysis and mapping of an ElasticSearch index based on annotations</description>
     <url>https://github.com/intersentia/elasticconfig</url>
     <artifactId>mapping_annotations</artifactId>
-    <version>0.7.6</version>
+    <version>0.7.7</version>
 
     <licenses>
         <license>

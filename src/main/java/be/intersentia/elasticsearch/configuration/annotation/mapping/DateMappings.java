@@ -1,7 +1,7 @@
 package be.intersentia.elasticsearch.configuration.annotation.mapping;
 
 import be.intersentia.elasticsearch.configuration.parser.DateMappingParser;
-import be.intersentia.elasticsearch.configuration.parser.MultipleMappingParserConfiguration;
+import be.intersentia.elasticsearch.configuration.parser.MultipleMappingParser;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
@@ -15,7 +15,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  */
 @Target({TYPE, FIELD})
 @Retention(RUNTIME)
-@MultipleMappingParserConfiguration(parser = DateMappingParser.class)
+@MultipleMappingParser(DateMappingParser.class)
 public @interface DateMappings {
 
     DateMapping[] value();

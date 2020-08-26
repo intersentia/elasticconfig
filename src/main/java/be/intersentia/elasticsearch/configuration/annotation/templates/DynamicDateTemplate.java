@@ -18,7 +18,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  */
 @Target({TYPE, FIELD})
 @Retention(RUNTIME)
-@TemplateParserConfiguration(parser = DateMappingParser.class)
+@TemplateParserConfiguration(value = DateMappingParser.class)
 public @interface DynamicDateTemplate {
     DynamicTemplate template();
     DateMapping mapping();

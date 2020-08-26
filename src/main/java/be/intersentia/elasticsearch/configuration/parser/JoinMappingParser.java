@@ -14,7 +14,6 @@ import java.util.Map;
  */
 public class JoinMappingParser extends AbstractMappingParser<JoinMapping> {
 
-    @SuppressWarnings("unused") // This constructor is called using reflection
     public JoinMappingParser(Class<?> clazz, Field field, JoinMapping annotation) {
         super(clazz, field, annotation);
     }

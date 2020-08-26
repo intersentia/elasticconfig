@@ -12,6 +12,6 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  */
 @Target(ANNOTATION_TYPE)
 @Retention(RUNTIME)
-public @interface MappingParserConfiguration {
-    Class<? extends AbstractMappingParser> parser();
+public @interface MultipleMappingParser {
+    Class<? extends AbstractMappingParser<?>> value();
 }

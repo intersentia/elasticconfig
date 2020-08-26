@@ -13,7 +13,6 @@ import java.util.Map;
  */
 public class NumericMappingParser extends AbstractMappingParser<NumericMapping> {
 
-    @SuppressWarnings("unused") // This constructor is called using reflection
     public NumericMappingParser(Class<?> clazz, Field field, NumericMapping annotation) {
         super(clazz, field, annotation);
     }

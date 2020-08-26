@@ -13,7 +13,6 @@ import java.util.*;
  */
 public class NestedMappingParser extends AbstractMappingParser<NestedMapping> {
 
-    @SuppressWarnings("unused") // This constructor is called using reflection
     public NestedMappingParser(Class<?> clazz, Field field, NestedMapping annotation) {
         super(clazz, field, annotation);
     }

@@ -12,7 +12,6 @@ import java.util.Map;
  */
 public class DateMappingParser extends AbstractMappingParser<DateMapping> {
 
-    @SuppressWarnings("unused") // This constructor is called using reflection
     public DateMappingParser(Class<?> clazz, Field field, DateMapping annotation) {
         super(clazz, field, annotation);
     }

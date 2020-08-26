@@ -1,6 +1,6 @@
 package be.intersentia.elasticsearch.configuration.annotation.mapping;
 
-import be.intersentia.elasticsearch.configuration.parser.MappingParserConfiguration;
+import be.intersentia.elasticsearch.configuration.parser.MappingParser;
 import be.intersentia.elasticsearch.configuration.parser.NestedMappingParser;
 
 import java.lang.annotation.Repeatable;
@@ -16,7 +16,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Target(FIELD)
 @Retention(RUNTIME)
 @Repeatable(NestedMappings.class)
-@MappingParserConfiguration(parser = NestedMappingParser.class)
+@MappingParser(NestedMappingParser.class)
 public @interface NestedMapping {
 
     /**
