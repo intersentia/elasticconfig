@@ -2,6 +2,7 @@ package be.intersentia.elasticsearch.configuration.parser;
 
 import be.intersentia.elasticsearch.configuration.annotation.mapping.IndexOptions;
 import be.intersentia.elasticsearch.configuration.annotation.mapping.SearchAsYouTypeMapping;
+import org.apache.commons.lang3.ArrayUtils;
 
 import java.lang.reflect.Field;
 import java.util.Map;
@@ -39,6 +40,9 @@ public class SearchAsYouTypeMappingParser extends AbstractMappingParser<SearchAs
 
         mapping.put("max_shingle_size", annotation.maxShingleSize());
 
+        if (ArrayUtils.isNotEmpty(annotation.copyTo())) {
+            mapping.put("copy_to", annotation.copyTo());
+        }
         mapping.put("index", annotation.index());
         if (annotation.indexOptions() != IndexOptions.DEFAULT) {
             mapping.put("index_options", annotation.indexOptions());

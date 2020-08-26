@@ -11,7 +11,7 @@
     <description>ElasticConfig Mapping Annotations is a Java project which allows you to automatically configure the analysis and mapping of an ElasticSearch index based on annotations</description>
     <url>https://github.com/intersentia/elasticconfig</url>
     <artifactId>mapping_annotations</artifactId>
-    <version>0.7.7</version>
+    <version>0.7.8</version>
 
     <licenses>
         <license>

@@ -55,6 +55,13 @@ public @interface SearchAsYouTypeMapping {
     String analyzer() default "DEFAULT";
 
     /**
+     * The copy_to parameter allows you to create custom _all fields. In other words, the values of multiple fields can
+     * be copied into a group field, which can then be queried as a single field. For instance, the first_name and
+     * last_name fields can be copied to the full_name field.
+     */
+    String[] copyTo() default {};
+
+    /**
      * Should the field be searchable? Accepts true (default) or false.
      */
     boolean index() default true;
